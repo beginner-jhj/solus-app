@@ -1,0 +1,46 @@
+import { create } from "zustand";
+import { setState } from "../../store/store.js";
+
+export const schedulePageStore = create((set, get) => ({
+      currentIndex: new Date().getMonth(),
+      setCurrentMonth: (value) => setState(set, get, "currentIndex", value),
+      openModal: false,
+      setOpenModal: (arg) => setState(set, get, "openModal", arg),
+      selectedDay: { day: null, month: null },
+      setSelectedDay: (arg) => setState(set, get, "selectedDay", arg),
+      showSetEvent: false,
+      setShowSetEvent: (arg) => setState(set, get, "showSetEvent", arg),
+      complete: false,
+      setComplete: (arg) => setState(set, get, "complete", arg),
+      savedEvents: [],
+      setSavedEvents: (arg) => setState(set, get, "savedEvents", arg),
+      trigger: false,
+      setTrigger: (arg) => setState(set, get, "trigger", arg),
+      isDragging: false,
+      setIsDragging: (arg) => setState(set, get, "isDragging", arg),
+      selectedDays: [],
+      setSelectedDays: (arg) => setState(set, get, "selectedDays", arg),
+      brainOn: false,
+      setBrainOn: (arg) => setState(set, get, "brainOn", arg),
+      showActionPopup: false,
+      setShowActionPopup: (arg) => setState(set, get, "showActionPopup", arg),
+      actionPopupPos: { top: 0, left: 0 },
+      setActionPopupPos: (arg) => setState(set, get, "actionPopupPos", arg),
+      firstChatAction: null,
+      setFirstChatAction: (arg) => setState(set, get, "firstChatAction", arg),
+}));
+
+export const monthNames = {
+    January: 1,
+    February: 2,
+    March: 3,
+    April: 4,
+    May: 5,
+    June: 6,
+    July: 7,
+    August: 8,
+    September: 9,
+    October: 10,
+    November: 11,
+    December: 12,
+  };
