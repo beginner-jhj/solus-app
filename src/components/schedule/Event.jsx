@@ -175,7 +175,7 @@ export function Event({
               </>
             ) : (
               <>
-                {startTime.slice(0, 5)} - {endTime.slice(0, 5)}
+                {startTime  ? startTime.slice(0, 5) : "∞"} - {endTime ? endTime.slice(0, 5) : "∞"}
               </>
             )}
           </span>

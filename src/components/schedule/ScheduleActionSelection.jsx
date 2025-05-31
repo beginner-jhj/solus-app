@@ -34,7 +34,7 @@ export function ScheduleActionSelection() {
 
   const handleIconClick = (iconRef) => {
     if (iconRef.current) {
-      const iconRect = iconRef.current.getBoundingClientRect();
+      const iconRect = iconRef.current?.getBoundingClientRect();
 
       let top = 0;
       let left = 0;
@@ -70,7 +70,7 @@ export function ScheduleActionSelection() {
         ref={reportIconRef}
         onClick={() => handleIconClick(reportIconRef)}
         className="cursor-pointer text-md"
-        title="Report"
+        title="report"
       >
         📝
       </span>
@@ -78,7 +78,7 @@ export function ScheduleActionSelection() {
         ref={recommendIconRef}
         onClick={() => handleIconClick(recommendIconRef)}
         className="cursor-pointer text-md"
-        title="Recommend"
+        title="recommend"
       >
         💡
       </span>

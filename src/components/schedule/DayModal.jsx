@@ -51,6 +51,12 @@ export function DayModal() {
     getSavedEvents();
   }, [selectedDay, trigger]);
 
+  useEffect(()=>{
+    if(savedEvents.length>0){
+      setShowSetEvent(false);
+    }
+  },[savedEvents]);
+
   return (
     <div
       onClick={(e) => {

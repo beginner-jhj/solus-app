@@ -8,17 +8,17 @@ import { checkAuth } from "../../lib/lib.js";
 import { useNavigate } from "react-router-dom";
 
 export function ChatResponse({ chatInfo}) {
-  const { role, response, intent, recommendations } = chatInfo;
+  const { role, response, determinedFormatType, suggestedSchedules } = chatInfo;
   const { profileImageURL } = store();
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
   const isAssistant = role === "assistant";
   const navigate = useNavigate();
 
   useEffect(()=>{
-    if(intent==="recommend"){
-      setCurrentRecommendations(()=>recommendations.map((recommendation,index)=>({...recommendation,id:`event-${index}`})));
+    if(determinedFormatType==="schedule_recommendation_list"){
+      setCurrentRecommendations(()=>suggestedSchedules.map((recommendation,index)=>({...recommendation,id:`event-${index}`})));
     }
-  },[recommendations])
+  },[suggestedSchedules])
 
   const handleAccept = async (recommendation) => {
     try {
@@ -76,7 +76,7 @@ export function ChatResponse({ chatInfo}) {
       <div className="w-full text-sm text-gray-800 whitespace-pre-line mb-1">
         {response}
       </div>
-      {intent === "recommend" && recommendations.length > 0 && (
+      {determinedFormatType === "schedule_recommendation_list" && suggestedSchedules.length > 0 && (
         <div className="w-full flex flex-col items-start mt-2">
           <div className="flex w-full items-center justify-between px-1 mb-1">
             <span className="font-semibold text-xs text-blue-700">
