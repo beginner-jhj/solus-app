@@ -5,7 +5,7 @@ export const assistantPageStore = create((set,get) => ({
     isChatStarting: false,
     setIsChatStarting: (arg) => setState(set,get,"isChatStarting",arg),
     chatHistory: [],
-    setChatHistory: (arg) => setState(set,get,"chatHistory",arg),
+    setChatHistory: (newMessage) => set((state) => ({ chatHistory: [...state.chatHistory, newMessage] })),
     message: "",
     setMessage: (arg) => setState(set,get,"message",arg),
     isLoading: false,
