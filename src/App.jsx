@@ -4,7 +4,7 @@ import TodaySchedule from "./pages/TodaySchedule.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
 import SigninForm from "./pages/Signin.jsx";
-import AskNickname from "./pages/AskNickname.jsx";
+import SurveyPage from "./pages/SurveyPage.jsx";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
           <Route path="assistant" element={<AssistantPage />} />
         </Route>
         <Route path="/signin" element={<SigninForm />} />
-        <Route path="/survey" element={<AskNickname />} />
+        <Route path="/survey" element={<SurveyPage />} />
       </Routes>
     </Router>
   );
