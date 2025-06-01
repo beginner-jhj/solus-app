@@ -4,18 +4,27 @@ import {useNavigate} from "react-router-dom"
 import { checkAuth,getLocation } from "../../lib/lib"
 
 export function Chat(){
-    const {setIsChatStarting, isChatStarting, message, setMessage, setChatHistory, setIsLoading} = assistantPageStore();
-    const chatRef = useRef(); // Keep ref if needed for other purposes, but not for style.bottom
+    // initStore is an action, so we get it directly from the store, not from the hook's return value for state.
+    // currentChatId is state, but not directly used in this component's render, managed by store.
+    const {setIsChatStarting, message, setMessage, setChatHistory, setIsLoading} = assistantPageStore();
+    const initStore = assistantPageStore.getState().initStore; // Get actions like this
+    const chatRef = useRef();
     const navigate = useNavigate();
 
-    // useEffect for style.bottom is removed as it's not needed with new layout
+    useEffect(() => {
+        // Call initStore on component mount to initialize DB and load summaries/chat ID
+        initStore().catch(error => {
+            console.error("Error during store initialization:", error);
+            // Handle initialization error, e.g., show a message to the user
+        });
+    }, [initStore]); // initStore is stable, so this effect runs once on mount
 
     const handleSend = async (messageContent) => {
         if(messageContent.trim() === ""){
             return;
         }
 
-        const userMessage = { type: "user", text: messageContent };
+        const userMessage = { type: "user", data: { text: messageContent } };
         setChatHistory(userMessage);
         setMessage(""); // Clear input immediately after sending user message to history
 
