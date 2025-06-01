@@ -3,6 +3,7 @@ import {setState} from "../../store/store.js";
 import {
     initDB,
     saveConversation,
+    loadConversations,
     loadConversationHistory,
     generateChatId
 } from "../../lib/lib.js";
@@ -16,6 +17,7 @@ initDB().then(() => {
 }).catch(console.error);
 
 export const assistantPageStore = create((set,get) => ({
+    isStoreInitialized: false, // Added flag
     isChatStarting: false,
     setIsChatStarting: (arg) => setState(set,get,"isChatStarting",arg),
     chatHistory: [],
@@ -157,8 +159,13 @@ export const assistantPageStore = create((set,get) => ({
 
     // Initial store setup logic
     initStore: async () => {
-        // Set isLoading to true at the beginning of initStore
-        set({ isLoading: true });
+        if (get().isStoreInitialized) {
+            // console.log("Store already initialized.");
+            if (get().isLoading) set({isLoading: false});
+            return;
+        }
+        set({ isStoreInitialized: true, isLoading: true }); // Set flag and initial loading
+
         const summaries = await get().fetchConversationSummaries(); // fetchConversationSummaries will set isLoading to false
 
         // Check currentChatId *after* fetching summaries
@@ -187,7 +194,7 @@ export const assistantPageStore = create((set,get) => ({
 // Zustand's `create` function runs synchronously, so `assistantPageStore` is defined.
 // We need to access methods on the store, so we do it after `create`.
 const useStore = assistantPageStore; // Standard way to get the hook
-const storeApi = useStore.getState(); // Get the store API (getState, setState, subscribe)
+// const storeApi = useStore.getState(); // Get the store API (getState, setState, subscribe) // Not needed if initStore is not called here
 
 // Initialize the store after it's fully created
-storeApi.initStore().catch(console.error);
+// storeApi.initStore().catch(console.error); // REMOVE THIS LINE
