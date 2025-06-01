@@ -18,13 +18,6 @@ export function Chat(){
         if(messageContent.trim() === ""){
             return;
         }
-
-        const userMessage = { type: "user", data: { text: messageContent } };
-        // Guard: Only call on user action, never in render
-        if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
-            console.warn("setChatHistory called during render! This will cause an infinite loop.");
-            return;
-        }
         setChatHistory(userMessage);
         setMessage(""); // Clear input immediately after sending user message to history
 
