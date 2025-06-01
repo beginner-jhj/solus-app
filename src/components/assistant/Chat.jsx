@@ -24,7 +24,7 @@ export function Chat(){
             return;
         }
 
-        const userMessage = { type: "user", data: { text: messageContent } };
+        const userMessage = { type: "user", text: messageContent };
         setChatHistory(userMessage);
         setMessage(""); // Clear input immediately after sending user message to history
 
