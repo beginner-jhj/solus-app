@@ -1,17 +1,22 @@
 export function AssistantMessage({ message }) {
+  console.log("AssistantMessage:",message);
   let responseToRender = "Assistant is processing..."; // Default fallback
 
   if (message.data && message.data.response) {
-    if (typeof message.data.response === 'string') {
-      responseToRender = message.data.response;
-    } else if (typeof message.data.response === 'object' && message.data.response.response) {
-      // If message.data.response is an object, and it has a 'response' key
-      responseToRender = message.data.response.response;
-    } else if (typeof message.data.response === 'object') {
-      // Fallback for object without a .response key: stringify for debugging or show generic error
-      console.error("AssistantMessage: message.data.response is an object but lacks a .response key:", message.data.response);
-      responseToRender = "Received a complex response object. Please check console for details.";
-    }
+    // if (typeof message.data.response === 'string') {
+    //   responseToRender = message.data.response;
+    //   responseToRender+="\n\n"+message.data.next_step.suggestion;
+    // } else if (typeof message.data.response === 'object' && message.data.response.response) {
+    //   // If message.data.response is an object, and it has a 'response' key
+    //   responseToRender = message.data.response.response;
+    //   responseToRender+="\n\n"+message.data.next_step.suggestion;
+    // } else if (typeof message.data.response === 'object') {
+    //   // Fallback for object without a .response key: stringify for debugging or show generic error
+    //   console.error("AssistantMessage: message.data.response is an object but lacks a .response key:", message.data.response);
+    //   responseToRender = "Received a complex response object. Please check console for details.";
+    // }
+    responseToRender = message.data.response.response;
+    responseToRender+="\n\n"+message.data.response.next_step.suggestion;
     // If message.data.response was something else (e.g. number, boolean), it will keep "Assistant is processing..." or be caught by string check.
   } else if (message.data && !message.data.error) {
     // if there's data, but no .response and no .error, it's an unexpected structure

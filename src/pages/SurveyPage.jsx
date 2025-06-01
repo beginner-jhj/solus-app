@@ -39,8 +39,8 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-10 bg-white rounded shadow-md w-full max-w-md">
+    <div className="w-80 flex flex-col items-center justify-center bg-gray-100">
+      <div className="p-10 bg-white rounded w-full">
         <div className='flex items-center mb-6'>
           <img src={logo} className='w-7 h-7 mr-2' alt="logo"/>
           <div ref={helloBox} className='text-xl font-bold'>
@@ -54,14 +54,14 @@ export default function SurveyPage() {
             ))}
           </div>
         </div>
-        <h1 className="mb-6 text-2xl font-bold text-center">Tell us about yourself!</h1>
+        <h1 className="mb-6 text-2xl font-bold text-center">Tell me about yourself!</h1>
         <form onSubmit={saveSurveyData} className="flex flex-col">
           <input
             type="text"
             placeholder={askNickname}
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
           <input
@@ -69,7 +69,7 @@ export default function SurveyPage() {
             placeholder="What I like"
             value={likes}
             onChange={(e) => setLikes(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
           <input
@@ -77,12 +77,12 @@ export default function SurveyPage() {
             placeholder="What I dislike"
             value={dislikes}
             onChange={(e) => setDislikes(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
           <button
             type="submit"
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer"
           >
             Save Survey
           </button>
