@@ -96,7 +96,7 @@ export function ChatResponse({ chatInfo}) {
     </div>)
 }
 
-function RecommendedEvent({ recommendation, handleAccept, currentRecommendations, setCurrentRecommendations }) {
+export function RecommendedEvent({ recommendation, handleAccept, currentRecommendations, setCurrentRecommendations }) {
   const [isHover, setIsHover] = useState(false);
   const acceptRef = useRef(null);
 

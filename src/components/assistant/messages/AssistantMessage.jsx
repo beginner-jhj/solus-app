@@ -3,20 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { RecommendedEvent } from '../../schedule/ChatResponse'; // Assuming ChatResponse.jsx is in this path
 import { checkAuth } from '../../../lib/lib.js'; // Adjusted path
 
-// Icon imports for RecommendedEvent
-import acceptIconGray from '../../../assets/complete.svg';
-import acceptIconColored from '../../../assets/complete-colored.svg';
-import declineIcon from '../../../assets/delete.svg';
 
 export function AssistantMessage({ message }) {
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (message.data && message.data.suggestedSchedules) {
+    if (message.data && message.data.response.suggestedSchedules) {
       // Ensure each recommendation has a unique ID if not provided by backend
       setCurrentRecommendations(
-        message.data.suggestedSchedules.map((rec, index) => ({
+        message.data.response.suggestedSchedules.map((rec, index) => ({
           ...rec,
           id: rec.id || `event-${Date.now()}-${index}`, // Add a simple unique ID
         }))
@@ -24,7 +20,7 @@ export function AssistantMessage({ message }) {
     } else {
       setCurrentRecommendations([]); // Clear recommendations if not present
     }
-  }, [message.data?.suggestedSchedules]);
+  }, [message.data?.response?.suggestedSchedules]);
 
   console.log("AssistantMessage:", message);
   let responseToRender = "Assistant is processing..."; // Default fallback
@@ -86,7 +82,7 @@ export function AssistantMessage({ message }) {
   // Determine if the final responseToRender string contains HTML
   const useHTML = typeof responseToRender === 'string' && /[<>]/g.test(responseToRender);
 
-  const determinedFormatType = message.data?.determinedFormatType;
+  const determinedFormatType = message.data?.response?.determinedFormatType;
 
   return (
     <div className="my-2 flex justify-start">
@@ -94,7 +90,7 @@ export function AssistantMessage({ message }) {
       {message.data && message.data.error ? (
         <div className="bg-red-100 text-red-700 p-3 rounded-xl shadow-md max-w-md lg:max-w-lg break-words">
           <p className="font-bold mb-1">Assistant Error</p>
-          <p>{typeof message.data.message === 'object' ? JSON.stringify(message.data.message) : (message.data.message || (typeof message.data.error === 'object' ? JSON.stringify(message.data.error) : message.data.error))}</p>
+          <p>{message.data.response.response}</p>
         </div>
       ) : (
         // Normal response rendering path
