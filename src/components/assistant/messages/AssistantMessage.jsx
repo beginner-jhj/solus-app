@@ -1,6 +1,76 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RecommendedEvent } from '../../schedule/ChatResponse'; // Assuming ChatResponse.jsx is in this path
+import { checkAuth } from '../../../lib/lib.js'; // Adjusted path
+
+// Icon imports for RecommendedEvent
+import acceptIconGray from '../../../assets/complete.svg';
+import acceptIconColored from '../../../assets/complete-colored.svg';
+import declineIcon from '../../../assets/delete.svg';
+
 export function AssistantMessage({ message }) {
-  console.log("AssistantMessage:",message);
+  const [currentRecommendations, setCurrentRecommendations] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (message.data && message.data.suggestedSchedules) {
+      // Ensure each recommendation has a unique ID if not provided by backend
+      setCurrentRecommendations(
+        message.data.suggestedSchedules.map((rec, index) => ({
+          ...rec,
+          id: rec.id || `event-${Date.now()}-${index}`, // Add a simple unique ID
+        }))
+      );
+    } else {
+      setCurrentRecommendations([]); // Clear recommendations if not present
+    }
+  }, [message.data?.suggestedSchedules]);
+
+  console.log("AssistantMessage:", message);
   let responseToRender = "Assistant is processing..."; // Default fallback
+
+  const handleAccept = async (recommendation) => {
+    try {
+      const accessToken = await checkAuth(navigate);
+      const response = await fetch("http://localhost:8000/schedule/add_event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          title: recommendation.title,
+          description: recommendation.description,
+          startTime: recommendation.suggestedStartTime,
+          endTime: recommendation.suggestedEndTime,
+          eventCategory: recommendation.suggestedEventCategory,
+          year: new Date().getFullYear(),
+          month: Number(recommendation.suggestedDate.split("-")[1]),
+          day: Number(recommendation.suggestedDate.split("-")[2]),
+        }),
+      });
+      if (response.ok) {
+        setCurrentRecommendations((prev) => prev.filter((rec) => rec.id !== recommendation.id));
+      } else {
+        console.error("Failed to accept event:", response.status, await response.text());
+        // Optionally, display an error to the user
+      }
+    } catch (err) {
+      console.error("Error accepting event:", err);
+      // Optionally, display an error to the user
+    }
+  };
+
+  const handleAcceptAll = async () => {
+    try {
+      for (const recommendation of currentRecommendations) {
+        await handleAccept(recommendation); // Sequentially accept
+      }
+    } catch (err) {
+      console.error("Error in handleAcceptAll:", err);
+      // Optionally, display an error to the user
+    }
+  };
 
   if (message.data && message.data.response) {
     responseToRender = message.data.response.response;
@@ -16,13 +86,14 @@ export function AssistantMessage({ message }) {
   // Determine if the final responseToRender string contains HTML
   const useHTML = typeof responseToRender === 'string' && /[<>]/g.test(responseToRender);
 
+  const determinedFormatType = message.data?.determinedFormatType;
+
   return (
     <div className="my-2 flex justify-start">
-      {/* Error display logic is now part of this conditional rendering */}
+      {/* Error display logic */}
       {message.data && message.data.error ? (
         <div className="bg-red-100 text-red-700 p-3 rounded-xl shadow-md max-w-md lg:max-w-lg break-words">
           <p className="font-bold mb-1">Assistant Error</p>
-          {/* Robustly handle if error itself is an object or string */}
           <p>{typeof message.data.message === 'object' ? JSON.stringify(message.data.message) : (message.data.message || (typeof message.data.error === 'object' ? JSON.stringify(message.data.error) : message.data.error))}</p>
         </div>
       ) : (
@@ -31,8 +102,35 @@ export function AssistantMessage({ message }) {
           {useHTML ? (
             <div dangerouslySetInnerHTML={{ __html: responseToRender }} />
           ) : (
-            // responseToRender should always be a string here due to the logic above
             responseToRender
+          )}
+          {determinedFormatType === "schedule_recommendation_list" && currentRecommendations && currentRecommendations.length > 0 && (
+            <div className="w-full flex flex-col items-start mt-2">
+              <div className="flex w-full items-center justify-between px-1 mb-1">
+                <span className="font-semibold text-xs text-blue-700">
+                  Suggested Events
+                </span>
+                {currentRecommendations.length > 0 && ( // Only show Accept All if there are recommendations
+                  <button
+                    className="text-xs text-blue-700 font-semibold cursor-pointer"
+                    onClick={handleAcceptAll}
+                  >
+                    Accept All
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col gap-y-2 w-full">
+                {currentRecommendations.map((recommendation) => (
+                  <RecommendedEvent
+                    key={recommendation.id}
+                    recommendation={recommendation}
+                    handleAccept={handleAccept} // Pass the new handleAccept
+                    currentRecommendations={currentRecommendations}
+                    setCurrentRecommendations={setCurrentRecommendations} // For handleDelete within RecommendedEvent
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
