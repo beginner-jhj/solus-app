@@ -23,6 +23,7 @@ export const assistantPageStore = create((set,get) => ({
     isChatStarting: false,
     setIsChatStarting: (arg) => setState(set,get,"isChatStarting",arg),
     chatHistory: [],
+
     // Simplified setChatHistory
     setChatHistory: (newMessage) => set(state => ({
         chatHistory: [...state.chatHistory, newMessage]
@@ -31,6 +32,7 @@ export const assistantPageStore = create((set,get) => ({
     setMessage: (arg) => setState(set,get,"message",arg),
     isLoading: false,
     setIsLoading: (arg) => setState(set,get,"isLoading",arg),
+
 
     // Removed IndexedDB-related actions:
     // createNewChat: async () => { ... },
@@ -42,6 +44,7 @@ export const assistantPageStore = create((set,get) => ({
         // console.log("Store init: No DB operations.");
         set({ isLoading: false });
     },
+
 }));
 
 // Removed module-level initStore call (already done in previous steps, but verified)
