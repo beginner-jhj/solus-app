@@ -3,7 +3,6 @@ import {setState} from "../../store/store.js";
 import {
     initDB,
     saveConversation,
-    loadConversations,
     loadConversationHistory,
     generateChatId
 } from "../../lib/lib.js";
@@ -144,7 +143,7 @@ export const assistantPageStore = create((set,get) => ({
     // Action to fetch conversation summaries
     fetchConversationSummaries: async () => {
         try {
-            const summaries = await loadConversations();
+            const summaries = await loadConversationHistory();
             set({ conversationSummaries: summaries });
             return summaries; // Return for potential chaining or direct use
         } catch (error) {
