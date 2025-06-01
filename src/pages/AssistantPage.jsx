@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { assistantPageStore } from "../components/assistant/assistantPageStore";
-import talkIcon from "../assets/talk-icon.svg";
+import conversationHistoryIcon from "../assets/talk-icon.svg";
 import { ConversationContainer } from "../components/assistant/ConversationContainer";
 
 export default function AssistantPage() {
@@ -41,7 +41,7 @@ export default function AssistantPage() {
       <div className="relative mb-4"> {/* Container for icon and dropdown, added margin bottom */}
         <img
           ref={iconRef}
-          src={talkIcon}
+          src={conversationHistoryIcon}
           className="w-6 h-6 cursor-pointer" // Adjusted size
           alt="Chat History"
           onClick={(e) => {
