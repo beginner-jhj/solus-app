@@ -21,77 +21,67 @@ export const assistantPageStore = create((set,get) => ({
     setIsChatStarting: (arg) => setState(set,get,"isChatStarting",arg),
     chatHistory: [],
     setChatHistory: (newMessage) => {
-        const oldState = get();
-        let determinedChatId = oldState.currentChatId;
-        let determinedSummary = "";
-        let newChatJustCreated = false;
-        let summaryShouldBeUpdated = false;
+      // --- Synchronous Part ---
+      const oldState = get(); // Get current state for decision making
+      let determinedChatId = oldState.currentChatId;
+      let determinedSummary = "";
+      let isNewChatIdBeingSet = false;
+      let summaryActuallyChanged = false;
 
-        // Chat ID Management
-        if (!determinedChatId) {
-            determinedChatId = generateChatId();
-            newChatJustCreated = true;
-        }
-
-        // Summary Determination Logic
-        if (newChatJustCreated) {
-            if (newMessage.type === "user" && newMessage.data && newMessage.data.text) {
-                determinedSummary = newMessage.data.text.substring(0, 50);
-            } else if (newMessage.type === "assistant" && newMessage.data) {
-                determinedSummary = newMessage.data.summary || newMessage.data.user_intent_summary ||
-                                  (newMessage.data.response ? newMessage.data.response.substring(0, 50) : "Assistant Response");
-            } else {
-                determinedSummary = "New Chat"; // Fallback for the very first message
-            }
-            summaryShouldBeUpdated = true;
+      if (!determinedChatId) { // Case 1: No currentChatId, so this is the first message of a new session
+        determinedChatId = generateChatId();
+        isNewChatIdBeingSet = true;
+        if (newMessage.type === "user" && newMessage.data && newMessage.data.text) {
+          determinedSummary = newMessage.data.text.substring(0, 50);
+        } else if (newMessage.type === "assistant" && newMessage.data) {
+          determinedSummary = newMessage.data.summary ||
+                              newMessage.data.user_intent_summary ||
+                              (newMessage.data.response ? newMessage.data.response.substring(0, 50) : "Assistant Chat");
         } else {
-            const existingSummaryObj = oldState.conversationSummaries.find(s => s.id === determinedChatId);
-            determinedSummary = existingSummaryObj ? existingSummaryObj.summary : "Chat Conversation"; // Fallback
-
-            // Check if this is the first user message replacing a generic "New Chat" summary
-            if (determinedSummary === "New Chat" &&
-                newMessage.type === "user" &&
-                newMessage.data && newMessage.data.text &&
-                oldState.chatHistory.length === 0) { // Check against old history BEFORE new message is added
-                determinedSummary = newMessage.data.text.substring(0, 50);
-                summaryShouldBeUpdated = true;
-            } else if (existingSummaryObj && existingSummaryObj.summary !== determinedSummary) {
-                // This case might be redundant if determinedSummary is always from existingSummaryObj here
-                // but good for safety if logic changes.
-                summaryShouldBeUpdated = true;
-            }
+          determinedSummary = "Chat"; // Fallback for a new chat
         }
+        summaryActuallyChanged = true; // A new summary is established
+      } else { // Case 2: currentChatId exists, this is an ongoing conversation
+        const existingSummaryObj = oldState.conversationSummaries.find(s => s.id === determinedChatId);
+        determinedSummary = existingSummaryObj ? existingSummaryObj.summary : "Chat Conversation"; // Default if not found
 
-        // Synchronous state update
-        set(state => ({
-            chatHistory: [...state.chatHistory, newMessage], // newMessage is stored completely
-            currentChatId: determinedChatId,
-            // isChatStarting could be set to true here if that's the desired behavior on new message
-        }));
+        // Check if we need to update a "New Chat" placeholder summary
+        // This happens if the current chat's summary is "New Chat" AND
+        // this is the first message being added to its history (history was empty before this message).
+        if (determinedSummary === "New Chat" &&
+            newMessage.type === "user" &&
+            newMessage.data &&
+            newMessage.data.text &&
+            oldState.chatHistory.length === 0) {
+          determinedSummary = newMessage.data.text.substring(0, 50);
+          summaryActuallyChanged = true; // The "New Chat" summary is updated
+        }
+        // Otherwise, for existing chats with established summaries, determinedSummary remains as fetched,
+        // and summaryActuallyChanged remains false.
+      }
 
-        // Async operations after state update
-        (async () => {
-            try {
-                // Use get() to ensure working with the newest state for saving
-                const newState = get();
-                await saveConversation({
-                    id: newState.currentChatId,
-                    summary: determinedSummary,
-                    history: newState.chatHistory
-                });
+      // Perform the synchronous state update
+      set(state => ({
+        chatHistory: [...state.chatHistory, newMessage],
+        currentChatId: determinedChatId // Update currentChatId if it was newly generated
+      }));
 
-                // Update summaries list if a new chat was created or summary was actually changed
-                const needsSummaryFetch = newChatJustCreated || (summaryShouldBeUpdated &&
-                    (!oldState.conversationSummaries.find(s => s.id === newState.currentChatId) ||
-                     oldState.conversationSummaries.find(s => s.id === newState.currentChatId)?.summary !== determinedSummary));
+      // --- Asynchronous Part ---
+      // Use an immediately invoked async function (IIFE)
+      (async () => {
+        const newState = get(); // Get the absolute latest state after the set operation
+        await saveConversation({
+          id: newState.currentChatId, // Use the ID from the potentially updated state
+          summary: determinedSummary,
+          history: newState.chatHistory
+        });
 
-                if (needsSummaryFetch) {
-                    await newState.fetchConversationSummaries();
-                }
-            } catch (error) {
-                console.error("Failed to save conversation or fetch summaries:", error);
-            }
-        })();
+        // Fetch summaries only if a new chat was created OR if the summary was actually changed
+        // (e.g. "New Chat" was updated, or a brand new chat got its initial summary)
+        if (isNewChatIdBeingSet || summaryActuallyChanged) {
+          await newState.fetchConversationSummaries();
+        }
+      })();
     },
     message: "",
     setMessage: (arg) => setState(set,get,"message",arg),
