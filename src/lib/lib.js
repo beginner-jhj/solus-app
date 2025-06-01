@@ -130,6 +130,10 @@ export const loadConversations = () => {
 
 // Load Conversation History
 export const loadConversationHistory = (id) => {
+  if (typeof id === 'undefined' || id === null) {
+    console.error("loadConversationHistory called with undefined or null id");
+    return Promise.resolve([]); // Resolve with empty history
+  }
   return new Promise((resolve, reject) => {
     initDB().then(db => {
       const transaction = db.transaction(STORE_NAME, "readonly");
