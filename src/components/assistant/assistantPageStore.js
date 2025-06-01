@@ -21,6 +21,9 @@ export const assistantPageStore = create((set,get) => ({
     isChatStarting: false,
     setIsChatStarting: (arg) => setState(set,get,"isChatStarting",arg),
     chatHistory: [],
+    // Track if we're currently in the process of updating summaries to prevent loops
+    _isFetchingSummaries: false,
+    
     setChatHistory: (newMessage) => {
       // --- Synchronous Part ---
       const oldState = get(); // Get current state for decision making
@@ -28,6 +31,14 @@ export const assistantPageStore = create((set,get) => ({
       let determinedSummary = "";
       let isNewChatIdBeingSet = false;
       let summaryActuallyChanged = false;
+
+      // Prevent calling during render phase
+      if (typeof window !== "undefined" && 
+          window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && 
+          window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+        console.error("setChatHistory called during render phase! This will cause infinite loops.");
+        return; // Exit early to prevent loops
+      }
 
       if (!determinedChatId) { // Case 1: No currentChatId, so this is the first message of a new session
         determinedChatId = generateChatId();
@@ -57,30 +68,46 @@ export const assistantPageStore = create((set,get) => ({
           determinedSummary = newMessage.data.text.substring(0, 50);
           summaryActuallyChanged = true; // The "New Chat" summary is updated
         }
-        // Otherwise, for existing chats with established summaries, determinedSummary remains as fetched,
-        // and summaryActuallyChanged remains false.
       }
 
-      // Perform the synchronous state update
+      // BATCH UPDATE: Do all synchronous state updates at once to prevent multiple renders
       set(state => ({
         chatHistory: [...state.chatHistory, newMessage],
         currentChatId: determinedChatId // Update currentChatId if it was newly generated
       }));
 
       // --- Asynchronous Part ---
-      // Use an immediately invoked async function (IIFE)
+      // Use an immediately invoked async function (IIFE) with debounce logic
       (async () => {
-        const newState = get(); // Get the absolute latest state after the set operation
-        await saveConversation({
-          id: newState.currentChatId, // Use the ID from the potentially updated state
-          summary: determinedSummary,
-          history: newState.chatHistory
-        });
+        try {
+          const newState = get(); // Get the absolute latest state after the set operation
+          
+          // Save conversation first (this doesn't affect UI state)
+          await saveConversation({
+            id: newState.currentChatId,
+            summary: determinedSummary,
+            history: newState.chatHistory
+          });
 
-        // Fetch summaries only if a new chat was created OR if the summary was actually changed
-        // (e.g. "New Chat" was updated, or a brand new chat got its initial summary)
-        if (isNewChatIdBeingSet || summaryActuallyChanged) {
-          await newState.fetchConversationSummaries();
+          // Only fetch summaries if needed AND we're not already fetching
+          if ((isNewChatIdBeingSet || summaryActuallyChanged) && !get()._isFetchingSummaries) {
+            // Set flag to prevent concurrent fetches
+            set({ _isFetchingSummaries: true });
+            
+            // Add a small delay to debounce multiple rapid calls
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Only proceed if we're still the most recent call
+            if (get()._isFetchingSummaries) {
+              await newState.fetchConversationSummaries();
+              // Reset flag when done
+              set({ _isFetchingSummaries: false });
+            }
+          }
+        } catch (error) {
+          console.error("Error in setChatHistory async operations:", error);
+          // Always reset flag on error
+          set({ _isFetchingSummaries: false });
         }
       })();
     },
@@ -93,9 +120,35 @@ export const assistantPageStore = create((set,get) => ({
     currentChatId: null,
     conversationSummaries: [],
 
+    // Flag to track if we're currently creating a new chat to prevent loops
+    _isCreatingNewChat: false,
+    
     createNewChat: async () => {
+        // Prevent calling during render phase
+        if (typeof window !== "undefined" && 
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && 
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+          console.error("createNewChat called during render phase! This will cause infinite loops.");
+          return; // Exit early to prevent loops
+        }
+        
+        // Prevent concurrent calls
+        if (get()._isCreatingNewChat) {
+            console.log("Already creating a new chat, ignoring duplicate call");
+            return;
+        }
+        
+        set({ _isCreatingNewChat: true });
         const newId = generateChatId();
-        set({ currentChatId: newId, chatHistory: [], message: "", isChatStarting: true });
+        
+        // Batch all UI state updates together
+        set({ 
+            currentChatId: newId, 
+            chatHistory: [], 
+            message: "", 
+            isChatStarting: true 
+        });
+        
         try {
             // Save a placeholder conversation
             await saveConversation({ id: newId, summary: "New Chat", history: [] });
@@ -103,42 +156,61 @@ export const assistantPageStore = create((set,get) => ({
             await get().fetchConversationSummaries();
         } catch (error) {
             console.error("Failed to create and save new chat:", error);
+        } finally {
+            // Always reset the flag when done
+            set({ _isCreatingNewChat: false });
         }
     },
 
+    // Flag to track if we're currently switching conversations to prevent loops
+    _isSwitchingConversation: false,
+    
     switchConversation: async (chatId) => {
+        // Prevent calling during render phase
+        if (typeof window !== "undefined" && 
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && 
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+          console.error("switchConversation called during render phase! This will cause infinite loops.");
+          return; // Exit early to prevent loops
+        }
+        
         if (!chatId) {
             console.error("switchConversation called with invalid chatId:", chatId);
             set({ isLoading: false }); // Ensure loading is stopped
-            // Do NOT automatically call createNewChat here if it's part of a loop.
-            // Let the UI or a more stable recovery mechanism handle this.
-            // If there's truly no currentChatId, initStore's logic for empty state
-            // should eventually create one without switchConversation forcing it in a loop.
             return;
         }
 
         if (get().currentChatId === chatId) {
             return; // Already on this conversation
         }
-
-        set({ isLoading: true });
+        
+        // Prevent concurrent calls
+        if (get()._isSwitchingConversation) {
+            console.log("Already switching conversation, ignoring duplicate call");
+            return;
+        }
+        
+        set({ _isSwitchingConversation: true, isLoading: true });
+        
         try {
             const history = await loadConversationHistory(chatId);
-            const currentConversation = get().conversationSummaries.find(conv => conv.id === chatId);
-
+            
+            // Batch all UI state updates together
             set({
                 currentChatId: chatId,
                 chatHistory: history || [],
                 message: "",
-                // isChatStarting should be true if history is empty, or based on your app's logic
                 isChatStarting: (history || []).length === 0,
-                isLoading: false
+                isLoading: false,
+                _isSwitchingConversation: false // Reset flag when done
             });
         } catch (error) {
             console.error("Failed to switch conversation:", error);
-            set({ isLoading: false });
-            // Potentially handle the error by, e.g., creating a new chat
-            // get().createNewChat();
+            // Reset all flags on error
+            set({ 
+                isLoading: false,
+                _isSwitchingConversation: false 
+            });
         }
     },
 
@@ -157,36 +229,55 @@ export const assistantPageStore = create((set,get) => ({
         }
     },
 
+    // Flag to track if we're currently initializing the store to prevent loops
+    _isInitializingStore: false,
+    
     // Initial store setup logic
     initStore: async () => {
+        console.log("initStore called", new Date().toISOString());
+        
+        // If already initialized, exit early
         if (get().isStoreInitialized) {
-            // console.log("Store already initialized.");
+            console.log("Store already initialized, skipping initialization");
             if (get().isLoading) set({isLoading: false});
             return;
         }
-        set({ isStoreInitialized: true, isLoading: true }); // Set flag and initial loading
-
-        const summaries = await get().fetchConversationSummaries(); // fetchConversationSummaries will set isLoading to false
-
-        // Check currentChatId *after* fetching summaries
-        const currentId = get().currentChatId;
-
-        if (currentId === null && summaries.length === 0) {
-            console.log("initStore: No current chat and no summaries. Creating a new chat.");
-            // This call to createNewChat is acceptable if it's truly a fresh start.
-            // createNewChat itself calls fetchConversationSummaries.
-            await get().createNewChat(); // createNewChat also handles isLoading
-        } else if (currentId === null && summaries.length > 0) {
-            console.log("initStore: Chats exist, but no current chat selected. User should select a chat or create new.");
-            // Ensure isLoading is false if we don't do anything else async here
-            set({ isLoading: false });
-        } else {
-            // If currentId is already set, or other conditions, ensure isLoading is false.
-            // This handles cases where summaries might exist and currentId is already set.
-            set({ isLoading: false });
+        
+        // Prevent concurrent initialization
+        if (get()._isInitializingStore) {
+            console.log("Store initialization already in progress, skipping duplicate call");
+            return;
         }
-        // If currentChatId is already set (e.g. from a previous session restore if you implement that),
-        // you might want to ensure its history is loaded here or rely on user action.
+        
+        // Set all initialization flags at once
+        set({ 
+            isStoreInitialized: true, 
+            isLoading: true,
+            _isInitializingStore: true 
+        });
+        
+        try {
+            const summaries = await get().fetchConversationSummaries();
+            
+            // Check currentChatId after fetching summaries
+            const currentId = get().currentChatId;
+            
+            if (currentId === null && summaries.length === 0) {
+                console.log("initStore: No current chat and no summaries. Creating a new chat.");
+                await get().createNewChat();
+            } else if (currentId === null && summaries.length > 0) {
+                console.log("initStore: Chats exist, but no current chat selected.");
+                set({ isLoading: false });
+            } else {
+                set({ isLoading: false });
+            }
+        } catch (error) {
+            console.error("Error during store initialization:", error);
+            set({ isLoading: false });
+        } finally {
+            // Always reset initialization flag when done
+            set({ _isInitializingStore: false });
+        }
     }
 }));
 

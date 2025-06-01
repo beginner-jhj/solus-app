@@ -12,15 +12,15 @@ export default function AssistantPage() {
     }),
     shallow // Apply shallow equality
   );
-  const { initStore, switchConversation, createNewChat } = assistantPageStore.getState();
+  const { switchConversation, createNewChat } = assistantPageStore.getState();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const iconRef = useRef(null);
 
   useEffect(() => {
-    initStore().catch(console.error); // Initialize store on component mount
-  }, [initStore]);
+    assistantPageStore.getState().initStore().catch(console.error); // Initialize store on component mount
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -61,6 +61,11 @@ export default function AssistantPage() {
             <div
               className="px-3 py-2 hover:bg-slate-100 cursor-pointer text-sm text-slate-700 border-b border-slate-200"
               onClick={() => {
+                // Guard: Only call on user click, never in render
+                if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+                  console.warn("createNewChat called during render! This will cause an infinite loop.");
+                  return;
+                }
                 createNewChat();
                 setIsDropdownOpen(false);
               }}
@@ -78,6 +83,11 @@ export default function AssistantPage() {
                       conv.id === currentChatId ? "bg-blue-50 text-blue-600 font-medium" : "text-slate-700"
                     }`}
                     onClick={() => {
+                      // Guard: Only call on user click, never in render
+                      if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+                        console.warn("switchConversation called during render! This will cause an infinite loop.");
+                        return;
+                      }
                       switchConversation(conv.id);
                       setIsDropdownOpen(false);
                     }}

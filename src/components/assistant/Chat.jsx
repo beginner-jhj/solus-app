@@ -11,13 +11,8 @@ export function Chat(){
     const chatRef = useRef();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // Call initStore on component mount to initialize DB and load summaries/chat ID
-        initStore().catch(error => {
-            console.error("Error during store initialization:", error);
-            // Handle initialization error, e.g., show a message to the user
-        });
-    }, [initStore]); // initStore is stable, so this effect runs once on mount
+    // Removed duplicate initStore call - this is now only called in AssistantPage.jsx
+    // to prevent multiple initialization attempts
 
     const handleSend = async (messageContent) => {
         if(messageContent.trim() === ""){
@@ -25,6 +20,11 @@ export function Chat(){
         }
 
         const userMessage = { type: "user", data: { text: messageContent } };
+        // Guard: Only call on user action, never in render
+        if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderPhase) {
+            console.warn("setChatHistory called during render! This will cause an infinite loop.");
+            return;
+        }
         setChatHistory(userMessage);
         setMessage(""); // Clear input immediately after sending user message to history
 
