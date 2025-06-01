@@ -3,6 +3,7 @@ import {setState} from "../../store/store.js";
 import {
     initDB,
     saveConversation,
+    loadConversations,
     loadConversationHistory,
     generateChatId
 } from "../../lib/lib.js";
