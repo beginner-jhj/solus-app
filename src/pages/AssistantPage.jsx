@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
+import { shallow } from 'zustand/shallow';
 import { assistantPageStore } from "../components/assistant/assistantPageStore";
-import conversationHistoryIcon from "../assets/talk-icon.svg";
+import talkIcon from "../assets/talk-icon.svg";
 import { ConversationContainer } from "../components/assistant/ConversationContainer";
 
 export default function AssistantPage() {
-  const { conversationSummaries, currentChatId } = assistantPageStore(state => ({
-    conversationSummaries: state.conversationSummaries,
-    currentChatId: state.currentChatId,
-  }));
+  const { conversationSummaries, currentChatId } = assistantPageStore(
+    state => ({
+      conversationSummaries: state.conversationSummaries,
+      currentChatId: state.currentChatId,
+    }),
+    shallow // Apply shallow equality
+  );
   const { initStore, switchConversation, createNewChat } = assistantPageStore.getState();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -41,7 +45,7 @@ export default function AssistantPage() {
       <div className="relative mb-4"> {/* Container for icon and dropdown, added margin bottom */}
         <img
           ref={iconRef}
-          src={conversationHistoryIcon}
+          src={talkIcon}
           className="w-6 h-6 cursor-pointer" // Adjusted size
           alt="Chat History"
           onClick={(e) => {
