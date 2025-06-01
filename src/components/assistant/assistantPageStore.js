@@ -106,12 +106,12 @@ export const assistantPageStore = create((set,get) => ({
 
     switchConversation: async (chatId) => {
         if (!chatId) {
-            console.warn("switchConversation called with null or undefined chatId");
-            // Optionally, create a new chat or load a default
-            // For now, just ensure a valid currentChatId exists or create one
-            if (!get().currentChatId) {
-                get().createNewChat(); // This will also fetch summaries
-            }
+            console.error("switchConversation called with invalid chatId:", chatId);
+            set({ isLoading: false }); // Ensure loading is stopped
+            // Do NOT automatically call createNewChat here if it's part of a loop.
+            // Let the UI or a more stable recovery mechanism handle this.
+            // If there's truly no currentChatId, initStore's logic for empty state
+            // should eventually create one without switchConversation forcing it in a loop.
             return;
         }
 
@@ -142,38 +142,41 @@ export const assistantPageStore = create((set,get) => ({
 
     // Action to fetch conversation summaries
     fetchConversationSummaries: async () => {
+        // isLoading is typically set to true by the caller of this function (e.g. initStore)
+        // This function's responsibility is to set isLoading to false on completion or error.
         try {
-            const summaries = await loadConversationHistory();
-            set({ conversationSummaries: summaries });
-            return summaries; // Return for potential chaining or direct use
+            const summaries = await loadConversations();
+            set({ conversationSummaries: summaries, isLoading: false });
+            return summaries;
         } catch (error) {
             console.error("Failed to fetch conversation summaries:", error);
-            set({ conversationSummaries: [] }); // Set to empty on error
+            set({ conversationSummaries: [], isLoading: false });
             return [];
         }
     },
 
     // Initial store setup logic
     initStore: async () => {
-        const summaries = await get().fetchConversationSummaries();
-        if (get().currentChatId === null && summaries.length === 0) {
-            // If there are no conversations and no current ID, create a new one.
-            const newId = generateChatId();
-            set({ currentChatId: newId });
-            // Save this initial new chat so it exists in DB from the start
-            try {
-                await saveConversation({ id: newId, summary: "New Chat", history: [] });
-                await get().fetchConversationSummaries(); // Refresh summaries to include this new one
-            } catch (error) {
-                console.error("Failed to save initial new chat:", error);
-            }
-        } else if (get().currentChatId === null && summaries.length > 0) {
-            // If there are conversations but no currentChatId (e.g. first load),
-            // you could set currentChatId to the most recent one.
-            // For now, we'll let switchConversation or user action handle explicit loading.
-            // Or, simply set to the first available summary's ID if desired.
-            // set({ currentChatId: summaries[0].id }); // Example: load first one
-            // await get().switchConversation(summaries[0].id); // And load its history
+        // Set isLoading to true at the beginning of initStore
+        set({ isLoading: true });
+        const summaries = await get().fetchConversationSummaries(); // fetchConversationSummaries will set isLoading to false
+
+        // Check currentChatId *after* fetching summaries
+        const currentId = get().currentChatId;
+
+        if (currentId === null && summaries.length === 0) {
+            console.log("initStore: No current chat and no summaries. Creating a new chat.");
+            // This call to createNewChat is acceptable if it's truly a fresh start.
+            // createNewChat itself calls fetchConversationSummaries.
+            await get().createNewChat(); // createNewChat also handles isLoading
+        } else if (currentId === null && summaries.length > 0) {
+            console.log("initStore: Chats exist, but no current chat selected. User should select a chat or create new.");
+            // Ensure isLoading is false if we don't do anything else async here
+            set({ isLoading: false });
+        } else {
+            // If currentId is already set, or other conditions, ensure isLoading is false.
+            // This handles cases where summaries might exist and currentId is already set.
+            set({ isLoading: false });
         }
         // If currentChatId is already set (e.g. from a previous session restore if you implement that),
         // you might want to ensure its history is loaded here or rely on user action.
