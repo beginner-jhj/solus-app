@@ -98,6 +98,36 @@ export const saveConversation = (conversation) => {
   });
 };
 
+// Load Conversations
+export const loadConversations = () => {
+  return new Promise((resolve, reject) => {
+    initDB().then(db => {
+      const transaction = db.transaction(STORE_NAME, "readonly");
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll(); // Correctly use getAll()
+
+      request.onsuccess = (event) => {
+        const conversations = event.target.result; // This will be an array
+        if (conversations) {
+          resolve(conversations.map(conv => ({ id: conv.id, summary: conv.summary })));
+        } else {
+          resolve([]); // Should not happen with getAll unless store is empty
+        }
+      };
+
+      request.onerror = (event) => {
+        console.error("Error loading conversations:", event.target.error);
+        reject(event.target.error);
+      };
+
+      transaction.onabort = (event) => { // Also good to handle onabort for readonly transactions
+        console.error("Transaction aborted while loading conversations:", event.target.error);
+        reject(event.target.error);
+      };
+    }).catch(reject);
+  });
+};
+
 // Load Conversation History
 export const loadConversationHistory = (id) => {
   return new Promise((resolve, reject) => {
