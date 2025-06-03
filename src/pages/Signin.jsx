@@ -36,24 +36,45 @@ export default function SigninForm() {
             .then((res) => res.json())
             .then(async (jsonRes) => {
               const { accessToken, refreshToken } = jsonRes;
-              chrome.runtime.sendMessage({
-                type: "SET_ACCESS_TOKEN",
-                token: accessToken,
+              
+              // Use Promise.all to wait for both token operations to complete
+              const setTokensPromise = Promise.all([
+                new Promise((resolve) => {
+                  chrome.runtime.sendMessage(
+                    {
+                      type: "SET_ACCESS_TOKEN",
+                      token: accessToken,
+                    },
+                    (response) => {
+                      resolve(response);
+                    }
+                  );
+                }),
+                new Promise((resolve) => {
+                  chrome.runtime.sendMessage(
+                    {
+                      type: "SET_REFRESH_TOKEN",
+                      token: refreshToken,
+                    },
+                    (response) => {
+                      resolve(response);
+                    }
+                  );
+                })
+              ]);
+              
+              // Wait for both tokens to be set before navigating
+              setTokensPromise.then(() => {
+                setLoginSuccess(true);
+                
+                if (!localStorage.getItem("nickname")) {
+                  navigate("/survey");
+                } else {
+                  navigate("/");
+                }
+              }).catch(error => {
+                console.error("Error setting tokens:", error);
               });
-              chrome.runtime.sendMessage({
-                type: "SET_REFRESH_TOKEN",
-                token: refreshToken,
-              });
-
-              setLoginSuccess(true);
-
-              if (!localStorage.getItem("nickname")) {
-                navigate("/survey");
-                return
-              } else {
-                navigate("/");
-                return
-              }
             })
             .catch((err) => {
               console.error(err);
