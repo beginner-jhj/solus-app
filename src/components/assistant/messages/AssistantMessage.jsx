@@ -9,10 +9,10 @@ export function AssistantMessage({ message }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (message.data && message.data.response.suggestedSchedules) {
+    if (message.data && message.data.suggestedSchedules && message.data.suggestedSchedules.length > 0) {
       // Ensure each recommendation has a unique ID if not provided by backend
       setCurrentRecommendations(
-        message.data.response.suggestedSchedules.map((rec, index) => ({
+        message.data.suggestedSchedules.map((rec, index) => ({
           ...rec,
           id: rec.id || `event-${Date.now()}-${index}`, // Add a simple unique ID
         }))
@@ -20,9 +20,8 @@ export function AssistantMessage({ message }) {
     } else {
       setCurrentRecommendations([]); // Clear recommendations if not present
     }
-  }, [message.data?.response?.suggestedSchedules]);
+  }, [message.data?.suggestedSchedules]);
 
-  console.log("AssistantMessage:", message);
   let responseToRender = "Assistant is processing..."; // Default fallback
 
   const handleAccept = async (recommendation) => {
@@ -69,11 +68,13 @@ export function AssistantMessage({ message }) {
   };
 
   if (message.data && message.data.response) {
-    responseToRender = message.data.response.response;
-    // If message.data.response was something else (e.g. number, boolean), it will keep "Assistant is processing..." or be caught by string check.
-  } else if (message.data && !message.data.error) {
-    // if there's data, but no .response and no .error, it's an unexpected structure
-    console.error("AssistantMessage: message.data exists but lacks .response and .error keys:", message.data);
+    // Direct access to the response field from simplified data
+    responseToRender = message.data.response;
+  } else if (message.data && message.data.error) {
+    responseToRender = message.data.error.message || "An error occurred";
+  } else if (message.data) {
+    // If there's data but not in the expected structure
+    console.error("AssistantMessage: Unexpected message.data structure:", message.data);
     responseToRender = "Received an unexpected response structure. Please check console for details.";
   }
   // Note: if message.data.error exists, that path is handled by the JSX conditional rendering below.
@@ -82,7 +83,7 @@ export function AssistantMessage({ message }) {
   // Determine if the final responseToRender string contains HTML
   const useHTML = typeof responseToRender === 'string' && /[<>]/g.test(responseToRender);
 
-  const determinedFormatType = message.data?.response?.determinedFormatType;
+  const determinedFormatType = message.data?.determinedFormatType;
 
   return (
     <div className="my-2 flex justify-start">
@@ -90,7 +91,7 @@ export function AssistantMessage({ message }) {
       {message.data && message.data.error ? (
         <div className="bg-red-100 text-red-700 p-3 rounded-xl shadow-md max-w-md lg:max-w-lg break-words">
           <p className="font-bold mb-1">Assistant Error</p>
-          <p>{message.data.response.response}</p>
+          <p>{message.data.error.message || "An unexpected error occurred"}</p>
         </div>
       ) : (
         // Normal response rendering path

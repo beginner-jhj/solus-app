@@ -1,3 +1,67 @@
+/**
+ * Utility function to handle fetch requests with consistent error handling
+ * 
+ * @param {string} url - The URL to fetch from
+ * @param {Object} options - Fetch options
+ * @param {Function} setError - Function to set error state for UI notification
+ * @param {Function} navigate - React Router navigate function (optional)
+ * @param {boolean} redirectOnAuthError - Whether to redirect to signin on auth errors
+ * @returns {Promise<Object>} - The response data
+ */
+export const fetchWithErrorHandling = async (url, options = {}, setError, navigate = null, redirectOnAuthError = true) => {
+  try {
+    const response = await fetch(url, options);
+    
+    // Check if the response is JSON
+    const contentType = response.headers.get('content-type');
+    const isJson = contentType && contentType.includes('application/json');
+    
+    // Parse the response based on content type
+    const data = isJson ? await response.json() : await response.text();
+    
+    // Handle unsuccessful responses
+    if (!response.ok) {
+      const errorMessage = isJson && data.message 
+        ? data.message 
+        : `Error: ${response.status} ${response.statusText}`;
+      
+      // Handle authentication errors
+      if (response.status === 401 && redirectOnAuthError && navigate) {
+        navigate('/signin');
+      }
+      
+      // Show error notification if setError function is provided
+      if (setError) {
+        setError({
+          open: true,
+          message: errorMessage
+        });
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    
+    // Show error notification if setError function is provided
+    if (setError) {
+      setError({
+        open: true,
+        message: error.message || 'Network error occurred'
+      });
+    }
+    
+    // Handle authentication errors that might be caught here
+    if (error.message.includes('Session expired') && redirectOnAuthError && navigate) {
+      navigate('/signin');
+    }
+    
+    throw error;
+  }
+};
+
 export const checkAuth = async (navigate) => {
     try {
       const response = await fetch("http://localhost:8000/auth/check_token", {
@@ -38,3 +102,118 @@ export const getLocation = ()=>{
     })
   })
 }
+
+// ✅ DB 열기
+export const openIndexedDB = (dbName, version, upgradeCallback) => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, version);
+
+    request.onupgradeneeded = function(event) {
+      upgradeCallback?.(event.target.result);
+    };
+
+    request.onsuccess = function(event) {
+      resolve(event.target.result);
+    };
+
+    request.onerror = function(event) {
+      reject(event.target.error);
+    };
+  });
+};
+
+// ✅ 데이터 추가 (Create)
+export const addDataToIndexedDB = (db, storeName, data) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], "readwrite");
+    const store = transaction.objectStore(storeName);
+    const request = store.add(data);
+
+    transaction.oncomplete = function() {
+      console.log("Data added successfully:", data);
+      resolve(data);
+    };
+
+    transaction.onerror = function(event) {
+      console.error("Error adding data:", event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+
+// ✅ 전체 데이터 가져오기 (Read All)
+export const getDataFromIndexedDB = (db, storeName) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], "readonly");
+    const store = transaction.objectStore(storeName);
+    const request = store.getAll();
+
+    request.onsuccess = function(event) {
+      console.log("Data retrieved successfully:", event.target.result);
+      resolve(event.target.result);
+    };
+
+    request.onerror = function(event) {
+      console.error("Error retrieving data:", event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+
+// ✅ 특정 데이터 가져오기 (Read by Key)
+export const getDataByKeyFromIndexedDB = (db, storeName, key) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], "readonly");
+    const store = transaction.objectStore(storeName);
+    const request = store.get(key);
+
+    request.onsuccess = function(event) {
+      console.log("Data retrieved by key successfully:", event.target.result);
+      resolve(event.target.result);
+    };
+
+    request.onerror = function(event) {
+      console.error("Error retrieving data by key:", event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+
+// ✅ 데이터 업데이트 (Update) → store.put(data)
+export const updateDataToIndexedDB = (db, storeName, data) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], "readwrite");
+    const store = transaction.objectStore(storeName);
+    const request = store.put(data); // put = add + update
+
+    transaction.oncomplete = function() {
+      console.log("Data updated successfully:", data);
+      resolve(data);
+    };
+
+    transaction.onerror = function(event) {
+      console.error("Error updating data:", event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+
+// ✅ 데이터 삭제 (Delete)
+export const deleteDataFromIndexedDB = (db, storeName, key) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], "readwrite");
+    const store = transaction.objectStore(storeName);
+    store.delete(key);
+
+    transaction.oncomplete = function() {
+      console.log("Data deleted successfully:", key);
+      resolve(key);
+    };
+
+    transaction.onerror = function(event) {
+      console.error("Error deleting data:", event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+

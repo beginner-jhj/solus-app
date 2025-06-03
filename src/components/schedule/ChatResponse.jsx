@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 export function ChatResponse({ chatInfo}) {
   const { role, response, determinedFormatType, suggestedSchedules } = chatInfo;
+  const useHTML = typeof response === 'string' && /[<>]/g.test(response);
   const { profileImageURL } = store();
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
   const isAssistant = role === "assistant";
@@ -73,9 +74,13 @@ export function ChatResponse({ chatInfo}) {
           {isAssistant ? "Solus Assistant" : localStorage.getItem("nickname")}
         </span>
       </div>
-      <div className="w-full text-sm text-gray-800 whitespace-pre-line mb-1">
-        {response}
-      </div>
+      {useHTML ? (
+        <div dangerouslySetInnerHTML={{ __html: response }} />
+      ) : (
+        <div className="w-full text-sm text-gray-800 whitespace-pre-line mb-1">
+          {response}
+        </div>
+      )}
       {determinedFormatType === "schedule_recommendation_list" && suggestedSchedules.length > 0 && (
         <div className="w-full flex flex-col items-start mt-2">
           <div className="flex w-full items-center justify-between px-1 mb-1">

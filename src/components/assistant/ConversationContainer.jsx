@@ -6,14 +6,28 @@ import { AssistantMessage } from "./messages/AssistantMessage";
 import { useEffect, useRef } from "react";
 
 export function ConversationContainer() {
-  const { chatHistory, isLoading, isChatStarting } = assistantPageStore();
+  const { 
+    chatHistory, 
+    isLoading, 
+    isChatStarting,
+    currentConversationId,
+    loadConversations
+  } = assistantPageStore();
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Scroll to bottom when chat history changes
   useEffect(scrollToBottom, [chatHistory]);
+  
+  // Reload conversations when a message is sent or received
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      loadConversations();
+    }
+  }, [chatHistory.length, loadConversations]);
 
   // Dynamically calculate available height for messages
   // This is a rough estimation. For perfect accuracy, one might need to use ResizeObserver
@@ -50,7 +64,7 @@ export function ConversationContainer() {
 
       {isLoading && (
         <div className="px-4 py-2 text-center text-xs text-slate-500 animate-pulse">
-          Assistant is typing...
+          I'm thinking...
         </div>
       )}
 

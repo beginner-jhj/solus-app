@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { schedulePageStore, monthNames } from "./schedulePageStore";
 import { checkAuth } from "../../lib/lib.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Event } from "./Event";
 import { SetEvent } from "./SetEvent";
 

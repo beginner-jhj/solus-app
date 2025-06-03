@@ -17,7 +17,7 @@ export function Greeting() {
             greetingContainerRef.current.style.flexDirection = "row"
             greetingContainerRef.current.style.alignItems = "center"
             greetingContainerRef.current.style.justifyContent = "start";
-            greetingMessageRef.current.style.fontSize = "14px"
+            greetingMessageRef.current.style.fontSize = "12px"
             greetingMessageRef.current.innerText = `What can I help you with?`
         }
     },[isChatStarting])

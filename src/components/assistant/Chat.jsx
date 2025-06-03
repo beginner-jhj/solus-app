@@ -1,25 +1,86 @@
 import { assistantPageStore } from "./assistantPageStore"
-import { useEffect, useRef } from "react"
-import {useNavigate} from "react-router-dom"
-import { checkAuth,getLocation } from "../../lib/lib"
+import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import { checkAuth, getLocation, openIndexedDB, addDataToIndexedDB, getDataFromIndexedDB, updateDataToIndexedDB, fetchWithErrorHandling } from "../../lib/lib"
+import ErrorNotification from "../common/ErrorNotification"
 
 export function Chat(){
-    // initStore is an action, so we get it directly from the store, not from the hook's return value for state.
-    // currentChatId is state, but not directly used in this component's render, managed by store.
-    const {setIsChatStarting, message, setMessage, setChatHistory, setIsLoading} = assistantPageStore();
-    const initStore = assistantPageStore.getState().initStore; // Get actions like this
+    const {
+        setIsChatStarting, 
+        message, 
+        setMessage, 
+        setChatHistory, 
+        setIsLoading,
+        currentConversationId,
+        setCurrentConversationId
+    } = assistantPageStore();
     const chatRef = useRef();
     const navigate = useNavigate();
+    const [db, setDb] = useState(null);
+    const [error, setError] = useState({ open: false, message: "" });
 
-    // Removed duplicate initStore call - this is now only called in AssistantPage.jsx
-    // to prevent multiple initialization attempts
+    // Initialize IndexedDB connection
+    useEffect(() => {
+        const initDb = async () => {
+            try {
+                const database = await openIndexedDB("chat", 1);
+                setDb(database);
+                
+                // Create a new conversation if none exists
+                if (!currentConversationId) {
+                    const newConversationId = `conv_${Date.now()}`;
+                    setCurrentConversationId(newConversationId);
+                }
+            } catch (error) {
+                console.error("Error initializing database:", error);
+            }
+        };
+        
+        initDb();
+    }, [currentConversationId, setCurrentConversationId]);
+
+    // Function to save message to IndexedDB
+    const saveMessageToDb = async (message) => {
+        if (!db || !currentConversationId) return;
+        
+        try {
+            const messageToSave = {
+                ...message,
+                conversationId: currentConversationId,
+                timestamp: new Date().toISOString()
+            };
+            
+            await addDataToIndexedDB(db, "messages", messageToSave);
+        } catch (error) {
+            console.error("Error saving message to database:", error);
+        }
+    };
+    
+    // Function to get conversation history from IndexedDB
+    const getConversationHistory = async () => {
+        if (!db || !currentConversationId) return [];
+        
+        try {
+            const allMessages = await getDataFromIndexedDB(db, "messages");
+            return allMessages
+                .filter(msg => msg.conversationId === currentConversationId)
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        } catch (error) {
+            console.error("Error retrieving conversation history:", error);
+            return [];
+        }
+    };
 
     const handleSend = async (messageContent) => {
         if(messageContent.trim() === ""){
             return;
         }
+        const userMessage = { type: "user", data: { message: messageContent } };
         setChatHistory(userMessage);
         setMessage(""); // Clear input immediately after sending user message to history
+        
+        // Save user message to IndexedDB
+        await saveMessageToDb(userMessage);
 
         setIsLoading(true);
         try {
@@ -28,29 +89,46 @@ export function Chat(){
             const likes = localStorage.getItem("likes") || "";
             const dislikes = localStorage.getItem("dislikes") || "";
             const userProfileInfo = { likes, dislikes };
-
-            const response = await fetch("http://localhost:8000/assistant/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
+            
+            // Get conversation history to send to mainAgent
+            const chatHistory = await getConversationHistory();
+            
+            const data = await fetchWithErrorHandling(
+                "http://localhost:8000/assistant/chat",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({ 
+                        message: messageContent, 
+                        location, 
+                        userProfileInfo,
+                        chatHistory // Send the chat history to mainAgent
+                    }),
                 },
-                body: JSON.stringify({ message: messageContent, location, userProfileInfo }),
-            });
-
-            if (!response.ok) {
-                // Handle HTTP errors like 4xx, 5xx
-                const errorData = await response.json().catch(() => ({ message: "Server error" })); // Try to parse JSON error, fallback
-                const assistantErrorMessage = { type: "assistant", data: { error: true, ...errorData } };
-                setChatHistory(assistantErrorMessage);
-                console.error("Server error:", response.status, errorData);
-                // Optionally, do not clear message here, or set a specific error message
-                return;
-            }
-
-            const data = await response.json();
-            const assistantMessage = { type: "assistant", data: data };
+                setError,
+                navigate
+            );
+            
+            // Extract only the essential parts from mainAgent's response
+            const simplifiedData = {
+                response: data.response.response || data.response,
+                summary: data.response.summary || "Chat response",
+                determinedFormatType: data.response.determinedFormatType,
+                suggestedSchedules: data.response.suggestedSchedules || []
+            };
+            
+            const assistantMessage = { type: "assistant", data: simplifiedData };
             setChatHistory(assistantMessage);
+            
+            // Save assistant message to IndexedDB
+            await saveMessageToDb(assistantMessage);
+            
+            // Trigger a reload of conversations to update the list
+            const { loadConversations } = assistantPageStore.getState();
+            loadConversations();
 
             // Process new_user_preference
             if (data.new_user_preference) {
@@ -61,7 +139,6 @@ export function Chat(){
                     localStorage.setItem("dislikes", data.new_user_preference.dislikes);
                 }
             }
-            // setMessage(""); // Moved up to clear after user sends their message
         } catch (error) {
             console.error("Failed to send message or process response:", error);
             const assistantErrorMessage = { type: "assistant", data: { error: true, message: error.message || "Network error" } };
@@ -74,21 +151,28 @@ export function Chat(){
 
 
     return (
-        <div className="p-3 h-full flex items-center">
-            <textarea
-                value={message}
-                ref={chatRef}
-                onClick={() => setIsChatStarting(true)}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) =>{
-                    if(e.key === "Enter" && !e.shiftKey){
-                        e.preventDefault();
-                        handleSend(message);
-                    }
-                }}
-                placeholder="Ask me anything..."
-                className="w-full h-full p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 rounded-xl shadow-sm bg-white text-slate-700 placeholder-slate-400 text-sm"
+        <>
+            <ErrorNotification 
+                open={error.open} 
+                message={error.message} 
+                onClose={() => setError({ ...error, open: false })} 
             />
-        </div>
+            <div className="p-3 h-full flex items-center">
+                <textarea
+                    value={message}
+                    ref={chatRef}
+                    onClick={() => setIsChatStarting(true)}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) =>{
+                        if(e.key === "Enter" && !e.shiftKey){
+                            e.preventDefault();
+                            handleSend(message);
+                        }
+                    }}
+                    placeholder="Ask me anything..."
+                    className="w-full h-full p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 rounded-xl shadow-sm bg-white text-slate-700 placeholder-slate-400 text-sm"
+                />
+            </div>
+        </>
     )
 }

@@ -1,10 +1,13 @@
 import logo from "../assets/logo.svg";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { openIndexedDB } from "../lib/lib";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export default function SigninForm() {
   const navigate = useNavigate();
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const handleLogin = () => {
     chrome.identity.launchWebAuthFlow(
       {
@@ -31,7 +34,7 @@ export default function SigninForm() {
             body: JSON.stringify({ accessToken }),
           })
             .then((res) => res.json())
-            .then((jsonRes) => {
+            .then(async (jsonRes) => {
               const { accessToken, refreshToken } = jsonRes;
               chrome.runtime.sendMessage({
                 type: "SET_ACCESS_TOKEN",
@@ -41,6 +44,9 @@ export default function SigninForm() {
                 type: "SET_REFRESH_TOKEN",
                 token: refreshToken,
               });
+
+              setLoginSuccess(true);
+
               if (!localStorage.getItem("nickname")) {
                 navigate("/survey");
                 return
@@ -56,6 +62,28 @@ export default function SigninForm() {
       }
     );
   };
+
+  useEffect(()=>{
+    const createDB = async () => {
+      try {
+        const db = await openIndexedDB("chat", 1, (db) => {
+          if(db.objectStoreNames.contains("messages")){
+            return;
+          }
+         const messagesStore = db.createObjectStore("messages", { keyPath: "id" , autoIncrement: true});
+         messagesStore.createIndex("conversationId", "conversationId", { unique: false });
+         messagesStore.createIndex("timestamp", "timestamp", { unique: false });
+        });
+      } catch (error) {
+        console.error("Error creating IndexedDB:", error);
+      }
+    }
+    if(loginSuccess){
+      createDB();
+    }
+  },[loginSuccess])
+
+
 
   return (
     <div className="w-80 h-60 flex flex-col items-center justify-center relative p-6">
