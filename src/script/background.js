@@ -8,8 +8,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       httpOnly: true,
       sameSite: "no_restriction",
       expirationDate: Math.floor(Date.now() / 1000) + 60 * 60,
+    }, () => {
+      sendResponse({ success: true });
     });
-    sendResponse({ success: true });
     return true;
   }
 
@@ -22,6 +23,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       httpOnly: true,
       sameSite: "no_restriction",
       expirationDate: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
+    }, () => {
+      sendResponse({ success: true });
     });
     return true;
   }
