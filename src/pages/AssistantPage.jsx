@@ -1,4 +1,4 @@
-import talkIcon from "../assets/talk-icon.svg";
+import convIcon from "../assets/talk-icon.svg";
 import { ConversationContainer } from "../components/assistant/ConversationContainer";
 import { assistantPageStore } from "../components/assistant/assistantPageStore";
 import { useEffect, useState } from "react";
@@ -14,7 +14,8 @@ export default function AssistantPage() {
     switchConversation,
     createNewConversation,
     deleteConversation,
-    currentConversationId
+    currentConversationId,
+    setIsChatStarting
   } = assistantPageStore();
   
   // State for delete confirmation dialog
@@ -75,7 +76,7 @@ export default function AssistantPage() {
       
       <div className="relative mb-4">
         <img
-          src={talkIcon}
+          src={convIcon}
           className="w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity"
           alt="Chat History Icon"
           onClick={toggleConversationList}
@@ -88,7 +89,7 @@ export default function AssistantPage() {
               <h3 className="text-sm font-medium text-gray-700">Conversations</h3>
               <button 
                 onClick={createNewConversation}
-                className="p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                className="p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors cursor-pointer"
                 title="New Conversation"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +109,10 @@ export default function AssistantPage() {
                   >
                     <div 
                       className="cursor-pointer pr-6"
-                      onClick={() => switchConversation(conv.id)}
+                      onClick={() => {
+                        setIsChatStarting(true);
+                        switchConversation(conv.id)
+                      }}
                     >
                       <div className="text-sm font-medium text-gray-800 truncate">{conv.title}</div>
                       <div className="text-xs text-gray-500 flex justify-between mt-1">

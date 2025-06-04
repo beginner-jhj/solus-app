@@ -34,7 +34,7 @@ export function ConversationContainer() {
   // or get actual heights of Greeting and Chat components.
   // Assuming Greeting is roughly 20% of initial view, Chat input is roughly 15%.
   // When chat starts, Greeting becomes smaller.
-  const greetingAreaHeightClass = isChatStarting ? "h-[60px]" : "h-[120px]"; // Fixed heights for more predictability
+  const greetingAreaHeightClass = isChatStarting ? "h-[30px]" : "h-[120px]"; // Fixed heights for more predictability
   const chatInputAreaHeight = "h-[80px]"; // Fixed height for chat input area
 
   return (
@@ -44,7 +44,7 @@ export function ConversationContainer() {
       </div>
 
       <div
-        className="flex-grow overflow-y-auto p-4 space-y-4 w-full"
+        className="flex-grow overflow-y-auto p-3 w-full"
         // Calculate max height for the message container area
         // Subtracting the heights of Greeting and Chat input area
         // style={{ maxHeight: `calc(100% - ${isChatStarting ? '60px' : '120px'} - 80px)` }}

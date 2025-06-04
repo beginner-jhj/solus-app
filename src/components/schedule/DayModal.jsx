@@ -18,6 +18,7 @@ export function DayModal() {
     setSavedEvents,
     trigger,
     complete,
+    setTrigger,
   } = schedulePageStore();
 
   useEffect(() => {
@@ -87,10 +88,12 @@ export function DayModal() {
             </div>
             <button
               onClick={() => setShowSetEvent(true)}
-              className="w-4 h-4 cursor-pointer flex items-center justify-center bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out"
+              className="p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors cursor-pointer"
               title="Add new event"
             >
-              <span className="text-xs font-semibold">+</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
             </button>
           </div>
           <button
@@ -101,7 +104,7 @@ export function DayModal() {
           </button>
         </div>
         <div className="w-full h-full flex flex-col overflow-y-auto gap-y-2 items-center justify-start">
-          {showSetEvent ? <SetEvent /> : null}
+          {showSetEvent ? <SetEvent setShowSetEvent={setShowSetEvent} selectedDay={selectedDay} setTrigger={setTrigger} /> : null}
           {savedEvents.map((event, index) => {
             return (
               <Event
