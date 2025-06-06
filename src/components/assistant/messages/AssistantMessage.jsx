@@ -9,7 +9,8 @@ export function AssistantMessage({ message }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (message.data && message.data.suggestedSchedules && message.data.suggestedSchedules.length > 0) {
+    console.log("message:", message);
+    if (message.data && message.data.response && message.data.suggestedSchedules && message.data.suggestedSchedules.length > 0) {
       // Ensure each recommendation has a unique ID if not provided by backend
       setCurrentRecommendations(
         message.data.suggestedSchedules.map((rec, index) => ({

@@ -98,7 +98,7 @@ export default function AssistantPage() {
               </button>
             </div>
             
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 h-[120px] overflow-y-auto">
               {conversations.length === 0 ? (
                 <div className="p-3 text-sm text-gray-500 text-center">No conversations yet</div>
               ) : (

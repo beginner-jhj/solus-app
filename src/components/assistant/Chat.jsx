@@ -88,7 +88,11 @@ export function Chat(){
             const location = await getLocation();
             const likes = localStorage.getItem("likes") || "";
             const dislikes = localStorage.getItem("dislikes") || "";
-            const userProfileInfo = { likes, dislikes };
+            const hobbies = localStorage.getItem("hobbies") || "";
+            const personalityTraits = localStorage.getItem("personality_traits") || "";
+            const communicationStyle = localStorage.getItem("communication_style") || "";
+            const topicsOfInterest = localStorage.getItem("topics_of_interest") || "";
+            const userProfileInfo = { likes, dislikes, hobbies, personalityTraits, communicationStyle, topicsOfInterest };
             
             // Get conversation history to send to mainAgent
             const chatHistory = await getConversationHistory();
@@ -116,7 +120,8 @@ export function Chat(){
             const simplifiedData = {
                 response: data.response.response || data.response,
                 summary: data.response.summary || "Chat response",
-                determinedFormatType: data.response.determinedFormatType,
+                topic: data.response.metadata.topic,
+                tone: data.response.metadata.tone,
                 suggestedSchedules: data.response.suggestedSchedules || []
             };
             
@@ -137,6 +142,18 @@ export function Chat(){
                 }
                 if (data.new_user_preference.dislikes) {
                     localStorage.setItem("dislikes", data.new_user_preference.dislikes);
+                }
+                if (data.new_user_preference.hobbies) {
+                    localStorage.setItem("hobbies", data.new_user_preference.hobbies);
+                }
+                if (data.new_user_preference.personality_traits) {
+                    localStorage.setItem("personality_traits", data.new_user_preference.personality_traits);
+                }
+                if (data.new_user_preference.communication_style) {
+                    localStorage.setItem("communication_style", data.new_user_preference.communication_style);
+                }
+                if (data.new_user_preference.topics_of_interest) {
+                    localStorage.setItem("topics_of_interest", data.new_user_preference.topics_of_interest);
                 }
             }
         } catch (error) {
