@@ -130,7 +130,6 @@ export const addDataToIndexedDB = (db, storeName, data) => {
     const request = store.add(data);
 
     transaction.oncomplete = function() {
-      console.log("Data added successfully:", data);
       resolve(data);
     };
 
@@ -149,7 +148,6 @@ export const getDataFromIndexedDB = (db, storeName) => {
     const request = store.getAll();
 
     request.onsuccess = function(event) {
-      console.log("Data retrieved successfully:", event.target.result);
       resolve(event.target.result);
     };
 
@@ -168,7 +166,6 @@ export const getDataByKeyFromIndexedDB = (db, storeName, key) => {
     const request = store.get(key);
 
     request.onsuccess = function(event) {
-      console.log("Data retrieved by key successfully:", event.target.result);
       resolve(event.target.result);
     };
 
@@ -180,14 +177,21 @@ export const getDataByKeyFromIndexedDB = (db, storeName, key) => {
 };
 
 // ✅ 데이터 업데이트 (Update) → store.put(data)
-export const updateDataToIndexedDB = (db, storeName, data) => {
+export const updateDataToIndexedDB = (db, storeName, key,data) => {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], "readwrite");
     const store = transaction.objectStore(storeName);
-    const request = store.put(data); // put = add + update
+    const getData = store.get(key);
+    
+    getData.onsuccess = function(event) {
+      const updatedData = {
+        ...event.target.result,
+        ...data
+      };
+      store.put(updatedData);
+    };
 
     transaction.oncomplete = function() {
-      console.log("Data updated successfully:", data);
       resolve(data);
     };
 
@@ -206,7 +210,6 @@ export const deleteDataFromIndexedDB = (db, storeName, key) => {
     store.delete(key);
 
     transaction.oncomplete = function() {
-      console.log("Data deleted successfully:", key);
       resolve(key);
     };
 

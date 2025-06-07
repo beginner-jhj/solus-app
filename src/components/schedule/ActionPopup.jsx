@@ -70,7 +70,6 @@ export function ActionPopup() {
           month: monthNames[month],
         }));
 
-      console.log("firstChatAction:", firstChatAction);
       let message = "";
 
       if (firstChatAction === "recommend") {

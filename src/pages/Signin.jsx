@@ -54,7 +54,6 @@ export default function SigninForm() {
                     },
                     (response) => {
                       clearTimeout(timeoutId); // Clear the timeout if we got a response
-                      console.log(`${messageType} response:`, response);
                       resolve(response || { success: true });
                     }
                   );
@@ -67,7 +66,6 @@ export default function SigninForm() {
                 createPromiseWithTimeout("SET_REFRESH_TOKEN", refreshToken)
               ])
               .then((responses) => {
-                console.log("All token operations completed:", responses);
                 
                 // Small delay to ensure cookies are properly set
                 setTimeout(() => {

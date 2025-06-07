@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RecommendedEvent } from '../../schedule/ChatResponse'; // Assuming ChatResponse.jsx is in this path
 import { checkAuth } from '../../../lib/lib.js'; // Adjusted path
+import {openIndexedDB,getDataByKeyFromIndexedDB,updateDataToIndexedDB} from '../../../lib/lib.js';
 
 
 export function AssistantMessage({ message }) {
@@ -9,13 +10,12 @@ export function AssistantMessage({ message }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("message:", message);
+    console.log("message.data", message.data);
     if (message.data && message.data.response && message.data.suggestedSchedules && message.data.suggestedSchedules.length > 0) {
       // Ensure each recommendation has a unique ID if not provided by backend
       setCurrentRecommendations(
-        message.data.suggestedSchedules.map((rec, index) => ({
-          ...rec,
-          id: rec.id || `event-${Date.now()}-${index}`, // Add a simple unique ID
+        message.data.suggestedSchedules.map((rec) => ({
+          ...rec
         }))
       );
     } else {
@@ -47,6 +47,18 @@ export function AssistantMessage({ message }) {
       });
       if (response.ok) {
         setCurrentRecommendations((prev) => prev.filter((rec) => rec.id !== recommendation.id));
+        const chatId = message.id;
+        const database = await openIndexedDB("chat", 1);
+        const currentChat = await getDataByKeyFromIndexedDB(database, "messages", chatId);
+        const updatedChat = {
+          ...currentChat,
+          data: {
+            ...currentChat.data,
+            suggestedSchedules: currentChat.data.suggestedSchedules.filter((rec) => rec.id !== recommendation.id)
+          }
+        };
+        await updateDataToIndexedDB(database, "messages", updatedChat.id, updatedChat);
+
       } else {
         console.error("Failed to accept event:", response.status, await response.text());
         // Optionally, display an error to the user
@@ -84,8 +96,6 @@ export function AssistantMessage({ message }) {
   // Determine if the final responseToRender string contains HTML
   const useHTML = typeof responseToRender === 'string' && /[<>]/g.test(responseToRender);
 
-  const determinedFormatType = message.data?.determinedFormatType;
-
   return (
     <div className="my-2 flex justify-start">
       {/* Error display logic */}
@@ -102,7 +112,7 @@ export function AssistantMessage({ message }) {
           ) : (
             responseToRender
           )}
-          {determinedFormatType === "schedule_recommendation_list" && currentRecommendations && currentRecommendations.length > 0 && (
+        {currentRecommendations && currentRecommendations.length > 0 && (
             <div className="w-full flex flex-col items-start mt-2">
               <div className="flex w-full items-center justify-between px-1 mb-1">
                 <span className="font-semibold text-xs text-blue-700">

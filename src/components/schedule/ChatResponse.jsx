@@ -8,7 +8,7 @@ import { checkAuth } from "../../lib/lib.js";
 import { useNavigate } from "react-router-dom";
 
 export function ChatResponse({ chatInfo}) {
-  const { role, response, determinedFormatType, suggestedSchedules } = chatInfo;
+  const { role, response, suggestedSchedules } = chatInfo;
   const useHTML = typeof response === 'string' && /[<>]/g.test(response);
   const { profileImageURL } = store();
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
@@ -16,7 +16,7 @@ export function ChatResponse({ chatInfo}) {
   const navigate = useNavigate();
 
   useEffect(()=>{
-    if(determinedFormatType==="schedule_recommendation_list"){
+    if(suggestedSchedules.length>0){
       setCurrentRecommendations(()=>suggestedSchedules.map((recommendation,index)=>({...recommendation,id:`event-${index}`})));
     }
   },[suggestedSchedules])
@@ -81,7 +81,7 @@ export function ChatResponse({ chatInfo}) {
           {response}
         </div>
       )}
-      {determinedFormatType === "schedule_recommendation_list" && suggestedSchedules.length > 0 && (
+      {suggestedSchedules.length > 0 && (
         <div className="w-full flex flex-col items-start mt-2">
           <div className="flex w-full items-center justify-between px-1 mb-1">
             <span className="font-semibold text-xs text-blue-700">

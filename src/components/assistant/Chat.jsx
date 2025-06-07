@@ -19,6 +19,7 @@ export function Chat(){
     const [db, setDb] = useState(null);
     const [error, setError] = useState({ open: false, message: "" });
 
+
     // Initialize IndexedDB connection
     useEffect(() => {
         const initDb = async () => {
@@ -44,8 +45,10 @@ export function Chat(){
         if (!db || !currentConversationId) return;
         
         try {
+            const newChatId = `chat_${Date.now()}`;
             const messageToSave = {
                 ...message,
+                id: newChatId,
                 conversationId: currentConversationId,
                 timestamp: new Date().toISOString()
             };
@@ -115,6 +118,11 @@ export function Chat(){
                 setError,
                 navigate
             );
+
+            let suggestedSchedulesWithIds = data.response.suggestedSchedules?.map((rec, index) => ({
+              ...rec,
+              id: `event-${Date.now()}-${index}`,
+            }));
             
             // Extract only the essential parts from mainAgent's response
             const simplifiedData = {
@@ -122,7 +130,7 @@ export function Chat(){
                 summary: data.response.summary || "Chat response",
                 topic: data.response.metadata.topic,
                 tone: data.response.metadata.tone,
-                suggestedSchedules: data.response.suggestedSchedules || []
+                suggestedSchedules: suggestedSchedulesWithIds || []
             };
             
             const assistantMessage = { type: "assistant", data: simplifiedData };
