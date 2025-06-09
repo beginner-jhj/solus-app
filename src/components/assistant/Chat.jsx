@@ -89,6 +89,7 @@ export function Chat(){
         try {
             const accessToken = await checkAuth(navigate);
             const location = await getLocation();
+            const nickname = localStorage.getItem("nicknames") || "";
             const likes = localStorage.getItem("likes") || "";
             const dislikes = localStorage.getItem("dislikes") || "";
             const hobbies = localStorage.getItem("hobbies") || "";
@@ -111,8 +112,9 @@ export function Chat(){
                     body: JSON.stringify({ 
                         message: messageContent, 
                         location, 
+                        nickname,
                         userProfileInfo,
-                        chatHistory // Send the chat history to mainAgent
+                        chatHistory:chatHistory.slice(-10) // Send the chat history to mainAgent
                     }),
                 },
                 setError,
