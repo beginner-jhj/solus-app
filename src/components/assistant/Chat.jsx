@@ -89,14 +89,25 @@ export function Chat(){
         try {
             const accessToken = await checkAuth(navigate);
             const location = await getLocation();
-            const nickname = localStorage.getItem("nicknames") || "";
+            const nickname = localStorage.getItem("nickname") || "";
             const likes = localStorage.getItem("likes") || "";
-            const dislikes = localStorage.getItem("dislikes") || "";
+            const residence = localStorage.getItem("residence") || "";
+            const dailyRoutine = localStorage.getItem("daily_routine") || "";
+            const personalGoals = localStorage.getItem("personal_goals") || "";
             const hobbies = localStorage.getItem("hobbies") || "";
             const personalityTraits = localStorage.getItem("personality_traits") || "";
             const communicationStyle = localStorage.getItem("communication_style") || "";
             const topicsOfInterest = localStorage.getItem("topics_of_interest") || "";
-            const userProfileInfo = { likes, dislikes, hobbies, personalityTraits, communicationStyle, topicsOfInterest };
+            const userProfileInfo = {
+                likes,
+                residence,
+                dailyRoutine,
+                personalGoals,
+                hobbies,
+                personalityTraits,
+                communicationStyle,
+                topicsOfInterest,
+            };
             
             // Get conversation history to send to mainAgent
             const chatHistory = await getConversationHistory();

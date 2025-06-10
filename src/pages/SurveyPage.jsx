@@ -5,11 +5,22 @@ import logo from "../assets/logo.svg";
 export default function SurveyPage() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
-  const [likes, setLikes] = useState("");
-  const [dislikes, setDislikes] = useState("");
-  const [askNickname, setAskNickname] = useState("What should we call you?");
+  const [likes, setLikes] = useState([]);
+  const [location, setLocation] = useState("");
+  const [dailyRoutine, setDailyRoutine] = useState("");
+  const [personalGoal, setPersonalGoal] = useState("");
+  const [askNickname, setAskNickname] = useState("What should I call you?");
   const hello = "Hi I'm Solus";
   const helloBox = useRef();
+
+  const categories = [
+    "Cooking",
+    "Exercise",
+    "Engineering",
+    "Watching Movies",
+    "Reading",
+    "Traveling",
+  ];
 
   useEffect(() => {
     if (navigator.language.startsWith("ko")) {
@@ -18,16 +29,27 @@ export default function SurveyPage() {
   }, []);
 
   const saveSurveyData = (e) => {
-    // Allow form submission via button click or Enter key press in any field
-    if (e.type === "submit" || (e.key === "Enter" && (nickname.trim() !== "" || likes.trim() !== "" || dislikes.trim() !== ""))) {
+    if (
+      e.type === "submit" ||
+      (e.key === "Enter" &&
+        (nickname.trim() !== "" || likes.length > 0 || location.trim() !== ""))
+    ) {
       e.preventDefault();
-      if (nickname.trim() === "" || likes.trim() === "" || dislikes.trim() === "") {
+      if (
+        nickname.trim() === "" ||
+        likes.length === 0 ||
+        location.trim() === "" ||
+        dailyRoutine.trim() === "" ||
+        personalGoal.trim() === ""
+      ) {
         alert("Please fill in all fields");
         return;
       }
       localStorage.setItem("nickname", nickname);
-      localStorage.setItem("likes", likes);
-      localStorage.setItem("dislikes", dislikes);
+      localStorage.setItem("likes", JSON.stringify(likes));
+      localStorage.setItem("residence", location);
+      localStorage.setItem("daily_routine", dailyRoutine);
+      localStorage.setItem("personal_goals", personalGoal);
       navigate("/");
     }
   };
@@ -36,6 +58,14 @@ export default function SurveyPage() {
     if (e.key === 'Enter') {
       saveSurveyData(e);
     }
+  };
+
+  const toggleCategory = (category) => {
+    setLikes((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
   };
 
   return (
@@ -64,22 +94,48 @@ export default function SurveyPage() {
             onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
+
+          <div className="mb-4">
+            <p className="mb-2 font-medium">What do you like?</p>
+            {categories.map((cat) => (
+              <label key={cat} className="flex items-center mb-1 space-x-2">
+                <input
+                  type="checkbox"
+                  value={cat}
+                  checked={likes.includes(cat)}
+                  onChange={() => toggleCategory(cat)}
+                  className="accent-blue-500"
+                />
+                <span>{cat}</span>
+              </label>
+            ))}
+          </div>
+
           <input
             type="text"
-            placeholder="What I like"
-            value={likes}
-            onChange={(e) => setLikes(e.target.value)}
+            placeholder="Where do you live?"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
             onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
+
+          <textarea
+            placeholder="What's your typical day like?"
+            value={dailyRoutine}
+            onChange={(e) => setDailyRoutine(e.target.value)}
+            className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200 resize-none"
+          />
+
           <input
             type="text"
-            placeholder="What I dislike"
-            value={dislikes}
-            onChange={(e) => setDislikes(e.target.value)}
+            placeholder="Any personal goals lately?"
+            value={personalGoal}
+            onChange={(e) => setPersonalGoal(e.target.value)}
             onKeyDown={handleKeyPress}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
           />
+
           <button
             type="submit"
             className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer"
