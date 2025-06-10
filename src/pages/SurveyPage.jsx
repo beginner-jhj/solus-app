@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
@@ -9,24 +9,35 @@ export default function SurveyPage() {
   const [location, setLocation] = useState("");
   const [dailyRoutine, setDailyRoutine] = useState("");
   const [personalGoal, setPersonalGoal] = useState("");
-  const [askNickname, setAskNickname] = useState("What should I call you?");
   const hello = "Hi I'm Solus";
   const helloBox = useRef();
 
   const categories = [
-    "Cooking",
-    "Exercise",
-    "Engineering",
-    "Watching Movies",
-    "Reading",
-    "Traveling",
-  ];
-
-  useEffect(() => {
-    if (navigator.language.startsWith("ko")) {
-      setAskNickname("어떻게 불러 드릴까요?");
-    }
-  }, []);
+    "🍳 Cooking",
+    "🏋️‍♂️ Exercise",
+    "🛠️ Engineering",
+    "🎬 Movies",
+    "📚 Reading",
+    "✈️ Traveling",
+    "🎨 Drawing",
+    "🎮 Gaming",
+    "🎸 Playing Music",
+    "🧩 Puzzles",
+    "📷 Photography",
+    "🌱 Gardening",
+    "✍️ Writing",
+    "🧘‍♀️ Meditation",
+    "🧶 Knitting",
+    "🃏 Board Games",
+    "🎤 Singing",
+    "💃 Dancing",
+    "🏞️ Hiking",
+    "🚴‍♂️ Cycling",
+    "🧪 Science Experiments",
+    "🕹️ Retro Gaming",
+    "🔭 Stargazing",
+    "🍿 Binge-watching",
+  ];  
 
   const saveSurveyData = (e) => {
     if (
@@ -84,11 +95,11 @@ export default function SurveyPage() {
             ))}
           </div>
         </div>
-        <h1 className="mb-6 text-2xl font-bold text-center">Tell me about yourself!</h1>
+        <h1 className="mb-6 text-xl font-bold text-center">Tell me about yourself!</h1>
         <form onSubmit={saveSurveyData} className="flex flex-col">
           <input
             type="text"
-            placeholder={askNickname}
+            placeholder="What should I call you?"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -97,23 +108,21 @@ export default function SurveyPage() {
 
           <div className="mb-4">
             <p className="mb-2 font-medium">What do you like?</p>
-            {categories.map((cat) => (
-              <label key={cat} className="flex items-center mb-1 space-x-2">
-                <input
-                  type="checkbox"
-                  value={cat}
-                  checked={likes.includes(cat)}
-                  onChange={() => toggleCategory(cat)}
-                  className="accent-blue-500"
-                />
-                <span>{cat}</span>
-              </label>
-            ))}
+            <select
+              value={likes}
+              onChange={(e) => toggleCategory(e.target.value)}
+              multiple={true}
+              className="w-full cursor-pointer px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
+            >
+              {categories.map((category)=>(
+                <option key={category} className="cursor-pointer">{category}</option>
+              ))}
+            </select>
           </div>
 
           <input
             type="text"
-            placeholder="Where do you live?"
+            placeholder="Where do you live? (e.g., Seoul, Los Angeles, New York)"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -121,7 +130,7 @@ export default function SurveyPage() {
           />
 
           <textarea
-            placeholder="What's your typical day like?"
+            placeholder="What's your typical day like? (e.g., I usually wake up at 7am and go to gym at 8am)"
             value={dailyRoutine}
             onChange={(e) => setDailyRoutine(e.target.value)}
             className="mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200 resize-none"
@@ -129,7 +138,7 @@ export default function SurveyPage() {
 
           <input
             type="text"
-            placeholder="Any personal goals lately?"
+            placeholder="Any personal goals lately? (e.g., I want to lose weight, I want to learn cooking, I want to travel to New York)"
             value={personalGoal}
             onChange={(e) => setPersonalGoal(e.target.value)}
             onKeyDown={handleKeyPress}
