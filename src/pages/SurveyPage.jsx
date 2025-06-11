@@ -45,6 +45,9 @@ export default function SurveyPage() {
     localStorage.setItem("residence", location);
     localStorage.setItem("daily_routine", dailyRoutine);
     localStorage.setItem("personal_goals", personalGoal);
+    localStorage.setItem("detailed_likes", JSON.stringify(
+      likes.map((like)=>([like.split(" ")[1],"I especially like ..."]))
+    ));
     navigate("/");
   };
 
@@ -53,8 +56,6 @@ export default function SurveyPage() {
       if (step < 4) {
         e.preventDefault();
         setStep((s) => s + 1);
-      } else {
-        saveSurveyData(e);
       }
     }
   };

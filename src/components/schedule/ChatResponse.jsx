@@ -8,6 +8,7 @@ import { checkAuth } from "../../lib/lib.js";
 import { useNavigate } from "react-router-dom";
 
 export function ChatResponse({ chatInfo}) {
+  console.log(chatInfo);
   const { role, response, suggestedSchedules } = chatInfo;
   const useHTML = typeof response === 'string' && /[<>]/g.test(response);
   const { profileImageURL } = store();
@@ -16,7 +17,7 @@ export function ChatResponse({ chatInfo}) {
   const navigate = useNavigate();
 
   useEffect(()=>{
-    if(suggestedSchedules.length>0){
+    if(suggestedSchedules?.length>0){
       setCurrentRecommendations(()=>suggestedSchedules.map((recommendation,index)=>({...recommendation,id:`event-${index}`})));
     }
   },[suggestedSchedules])
@@ -81,7 +82,7 @@ export function ChatResponse({ chatInfo}) {
           {response}
         </div>
       )}
-      {suggestedSchedules.length > 0 && (
+      {suggestedSchedules?.length > 0 && (
         <div className="w-full flex flex-col items-start mt-2">
           <div className="flex w-full items-center justify-between px-1 mb-1">
             <span className="font-semibold text-xs text-blue-700">

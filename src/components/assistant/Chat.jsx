@@ -94,19 +94,14 @@ export function Chat(){
             const residence = localStorage.getItem("residence") || "";
             const dailyRoutine = localStorage.getItem("daily_routine") || "";
             const personalGoals = localStorage.getItem("personal_goals") || "";
-            const hobbies = localStorage.getItem("hobbies") || "";
-            const personalityTraits = localStorage.getItem("personality_traits") || "";
-            const communicationStyle = localStorage.getItem("communication_style") || "";
-            const topicsOfInterest = localStorage.getItem("topics_of_interest") || "";
+            const detailedLikes = JSON.parse(localStorage.getItem("detailed_likes"))
+
             const userProfileInfo = {
                 likes,
                 residence,
                 dailyRoutine,
                 personalGoals,
-                hobbies,
-                personalityTraits,
-                communicationStyle,
-                topicsOfInterest,
+                detailedLikes,
             };
             
             // Get conversation history to send to mainAgent
