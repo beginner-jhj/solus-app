@@ -95,7 +95,7 @@ export default function SurveyPage() {
                 <div
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`w-full h-full cursor-pointer border rounded border-gray-300 flex items-center justify-center text-sm ${likes.includes(category) ? "bg-blue-500 text-white" : "bg-white"}`}
+                  className={`w-full h-full cursor-pointer border rounded border-gray-300 flex items-center justify-center text-sm p-3 ${likes.includes(category) ? "bg-blue-500 text-white" : "bg-white"}`}
                 >
                   <p className="text-center">{category}</p>
                 </div>
