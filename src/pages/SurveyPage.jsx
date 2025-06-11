@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
+import ErrorNotification from "../components/common/ErrorNotification";
 
 export default function SurveyPage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function SurveyPage() {
   const [step, setStep] = useState(0);
   const hello = "Hi I'm Solus";
   const helloBox = useRef();
+  const [openNotification, setOpenNotification] = useState(false);
 
   const categories = [
     "🍳 Cooking",
@@ -22,22 +24,7 @@ export default function SurveyPage() {
     "✈️ Traveling",
     "🎨 Drawing",
     "🎮 Gaming",
-    "🎸 Playing Music",
-    "🧩 Puzzles",
-    "📷 Photography",
-    "🌱 Gardening",
-    "✍️ Writing",
-    "🧘‍♀️ Meditation",
-    "🧶 Knitting",
-    "🃏 Board Games",
-    "🎤 Singing",
-    "💃 Dancing",
-    "🏞️ Hiking",
-    "🚴‍♂️ Cycling",
-    "🧪 Science Experiments",
-    "🕹️ Retro Gaming",
-    "🔭 Stargazing",
-    "🍿 Binge-watching",
+    "🎸 Music",
   ];
 
   const saveSurveyData = (e) => {
@@ -46,11 +33,12 @@ export default function SurveyPage() {
       nickname.trim() === "" ||
       likes.length === 0 ||
       location.trim() === "" ||
-      dailyRoutine.trim() === "" ||
-      personalGoal.trim() === ""
+      dailyRoutine.trim() === ""
     ) {
-      alert("Please fill in all fields");
-      return;
+      if(step===4){
+        setOpenNotification(true);
+        return;
+      }
     }
     localStorage.setItem("nickname", nickname);
     localStorage.setItem("likes", JSON.stringify(likes));
@@ -102,14 +90,14 @@ export default function SurveyPage() {
         return (
           <div className="mb-4">
             <p className="mb-2 font-medium">What do you like?</p>
-            <div className="grid grid-cols-2 gap-2" tabIndex="0" onKeyDown={handleKeyPress}>
+            <div className="grid grid-cols-3 grid-rows-3 gap-1" tabIndex="0" onKeyDown={handleKeyPress}>
               {categories.map((category) => (
                 <div
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`cursor-pointer border rounded px-2 py-1 text-sm ${likes.includes(category) ? "bg-blue-500 text-white" : "bg-white"}`}
+                  className={`w-full h-full cursor-pointer border rounded border-gray-300 flex items-center justify-center text-sm ${likes.includes(category) ? "bg-blue-500 text-white" : "bg-white"}`}
                 >
-                  {category}
+                  <p className="text-center">{category}</p>
                 </div>
               ))}
             </div>
@@ -172,6 +160,13 @@ export default function SurveyPage() {
 
   return (
     <div className="w-80 flex flex-col items-center justify-center bg-gray-100">
+      <ErrorNotification
+        open={openNotification}
+        message="Please fill in all fields"
+        onClose={() => setOpenNotification(false)}
+        severity="error"
+        duration={2000}
+      />
       <div className="p-10 bg-white rounded w-full">
         <div className="flex items-center mb-6">
           <img src={logo} className="w-7 h-7 mr-2" alt="logo" />
@@ -195,7 +190,7 @@ export default function SurveyPage() {
               <button
                 type="button"
                 onClick={() => setStep((s) => s - 1)}
-                className="px-4 py-2 text-white bg-gray-400 rounded hover:bg-gray-500"
+                className="px-4 py-2 text-white bg-gray-400 rounded hover:bg-gray-500 cursor-pointer"
               >
                 Prev
               </button>
@@ -204,14 +199,14 @@ export default function SurveyPage() {
               <button
                 type="button"
                 onClick={() => setStep((s) => s + 1)}
-                className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+                className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer"
               >
                 Next
               </button>
             ) : (
               <button
                 type="submit"
-                className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+                className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer"
               >
                 Save Survey
               </button>
