@@ -33,12 +33,11 @@ export default function SurveyPage() {
       nickname.trim() === "" ||
       likes.length === 0 ||
       location.trim() === "" ||
-      dailyRoutine.trim() === ""
+      dailyRoutine.trim() === "" ||
+      personalGoal.trim() === ""
     ) {
-      if(step===4){
-        setOpenNotification(true);
-        return;
-      }
+      setOpenNotification(true);
+      return;
     }
     localStorage.setItem("nickname", nickname);
     localStorage.setItem("likes", JSON.stringify(likes));
@@ -184,7 +183,7 @@ export default function SurveyPage() {
           </div>
         </div>
         <h1 className="mb-6 text-xl font-bold text-center">Tell me about yourself!</h1>
-        <form onSubmit={saveSurveyData} className="flex flex-col">
+        <div className="flex flex-col">
           {renderStep()}
           <div className="flex justify-between mt-2">
             {step > 0 && (
@@ -206,14 +205,14 @@ export default function SurveyPage() {
               </button>
             ) : (
               <button
-                type="submit"
+                onClick={saveSurveyData}
                 className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer"
               >
                 Save Survey
               </button>
             )}
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
