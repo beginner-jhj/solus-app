@@ -8,7 +8,6 @@ import { checkAuth } from "../../lib/lib.js";
 import { useNavigate } from "react-router-dom";
 
 export function ChatResponse({ chatInfo}) {
-  console.log(chatInfo);
   const { role, response, suggestedSchedules } = chatInfo;
   const useHTML = typeof response === 'string' && /[<>]/g.test(response);
   const { profileImageURL } = store();
