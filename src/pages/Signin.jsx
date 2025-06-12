@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { openIndexedDB } from "../lib/lib";
 import LoadingOverlay from "../components/LoadingOverlay.jsx";
+import ErrorNotification from "../components/common/ErrorNotification.jsx";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -10,6 +11,7 @@ export default function SigninForm() {
   const navigate = useNavigate();
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [openNotification, setOpenNotification] = useState(false);
   const handleLogin = () => {
     setLoading(true);
     chrome.identity.launchWebAuthFlow(
@@ -76,7 +78,7 @@ export default function SigninForm() {
                   setLoginSuccess(true);
                   setLoading(false);
 
-                  if (!localStorage.getItem("nickname")) {
+                  if (!localStorage.getItem("didSurvey")) {
                     navigate("/survey");
                   } else {
                     navigate("/");
@@ -89,11 +91,8 @@ export default function SigninForm() {
                 setLoginSuccess(true);
                 setLoading(false);
                 
-                if (!localStorage.getItem("nickname")) {
-                  navigate("/survey");
-                } else {
-                  navigate("/");
-                }
+                setOpenNotification(true);
+                navigate("/signin");
               });
             })
               .catch((err) => {
@@ -129,6 +128,13 @@ export default function SigninForm() {
 
   return (
     <div className="w-80 h-60 flex flex-col items-center justify-center relative p-6">
+      <ErrorNotification
+        open={openNotification}
+        message="Error occurred during signin process. Please try again."
+        onClose={() => setOpenNotification(false)}
+        severity="error"
+        duration={2000}
+      />
       <img src={logo} className="w-8 h-8 absolute top-4 left-4" />
       <h1 className="text-2xl font-bold mt-2">Solus</h1>
       <p className="text-sm text-gray-600 mb-6">Your Day, Smarter.</p>

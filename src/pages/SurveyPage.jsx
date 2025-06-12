@@ -43,15 +43,13 @@ export default function SurveyPage() {
       return;
     }
 
-    localStorage.setItem("nickname", nickname);
-    localStorage.setItem("likes", JSON.stringify(likes));
-    localStorage.setItem("residence", location);
-    localStorage.setItem("daily_routine", dailyRoutine);
-    localStorage.setItem("personal_goals", personalGoal);
-    localStorage.setItem(
-      "detailed_likes",
-      JSON.stringify(likes.map((like) => [like.split(" ")[1], "I especially like ..."]))
-    );
+    // localStorage.setItem("nickname", nickname);
+    // localStorage.setItem("likes", JSON.stringify(likes.map((like)=>([like.split(" ")[1], []]))));
+    // localStorage.setItem("residence", location);
+    // localStorage.setItem("daily_routine", dailyRoutine);
+    // localStorage.setItem("personal_goals", personalGoal);
+
+    localStorage.setItem('didSurvey', true);
 
     try {
       setLoading(true);
@@ -65,10 +63,10 @@ export default function SurveyPage() {
         credentials: "include",
         body: JSON.stringify({
           nickname,
-          likes,
-          residence: location,
-          daily_routine: dailyRoutine,
-          personal_goals: personalGoal,
+          likes: JSON.stringify(likes.map((like)=>([like.split(" ")[1], []]))),
+          location,
+          dailyRoutine,
+          personalGoal,
         }),
       });
     } catch (err) {
