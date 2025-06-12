@@ -88,21 +88,7 @@ export function Chat(){
         setIsLoading(true);
         try {
             const accessToken = await checkAuth(navigate);
-            const location = await getLocation();
-            const nickname = localStorage.getItem("nickname") || "";
-            const likes = localStorage.getItem("likes") || "";
-            const residence = localStorage.getItem("residence") || "";
-            const dailyRoutine = localStorage.getItem("daily_routine") || "";
-            const personalGoals = localStorage.getItem("personal_goals") || "";
-            const detailedLikes = JSON.parse(localStorage.getItem("detailed_likes"))
-
-            const userProfileInfo = {
-                likes,
-                residence,
-                dailyRoutine,
-                personalGoals,
-                detailedLikes,
-            };
+            const currentLocation = await getLocation();
             
             // Get conversation history to send to mainAgent
             const chatHistory = await getConversationHistory();
@@ -117,9 +103,7 @@ export function Chat(){
                     },
                     body: JSON.stringify({ 
                         message: messageContent, 
-                        location, 
-                        nickname,
-                        userProfileInfo,
+                        currentLocation,
                         chatHistory:chatHistory.slice(-10) // Send the chat history to mainAgent
                     }),
                 },
