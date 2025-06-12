@@ -2,13 +2,16 @@ import logo from "../assets/logo.svg";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { openIndexedDB } from "../lib/lib";
+import LoadingOverlay from "../components/LoadingOverlay.jsx";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export default function SigninForm() {
   const navigate = useNavigate();
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleLogin = () => {
+    setLoading(true);
     chrome.identity.launchWebAuthFlow(
       {
         url: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=https://${chrome.runtime.id}.chromiumapp.org&scope=profile%20email`,
@@ -21,6 +24,7 @@ export default function SigninForm() {
           redirectUrl.includes("error=")
         ) {
           console.error("Login failed", chrome.runtime.lastError);
+          setLoading(false);
         } else {
           const accessToken = new URL(redirectUrl).hash.match(
             /access_token=([^&]+)/
@@ -70,7 +74,8 @@ export default function SigninForm() {
                 // Small delay to ensure cookies are properly set
                 setTimeout(() => {
                   setLoginSuccess(true);
-                  
+                  setLoading(false);
+
                   if (!localStorage.getItem("nickname")) {
                     navigate("/survey");
                   } else {
@@ -82,6 +87,7 @@ export default function SigninForm() {
                 console.error("Error setting tokens:", error);
                 // Continue anyway after error, as tokens might still be set
                 setLoginSuccess(true);
+                setLoading(false);
                 
                 if (!localStorage.getItem("nickname")) {
                   navigate("/survey");
@@ -90,9 +96,10 @@ export default function SigninForm() {
                 }
               });
             })
-            .catch((err) => {
-              console.error(err);
-            });
+              .catch((err) => {
+                console.error(err);
+                setLoading(false);
+              });
         }
       }
     );
@@ -139,6 +146,7 @@ export default function SigninForm() {
           Sign in with Google
         </span>
       </button>
+      {loading && <LoadingOverlay />}
     </div>
   );
 }

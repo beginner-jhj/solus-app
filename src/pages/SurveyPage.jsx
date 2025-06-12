@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import ErrorNotification from "../components/common/ErrorNotification";
+import LoadingOverlay from "../components/LoadingOverlay.jsx";
+import { checkAuth } from "../lib/lib.js";
 
 export default function SurveyPage() {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function SurveyPage() {
   const hello = "Hi I'm Solus";
   const helloBox = useRef();
   const [openNotification, setOpenNotification] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const categories = [
     "🍳 Cooking",
@@ -27,7 +30,7 @@ export default function SurveyPage() {
     "🎸 Music",
   ];
 
-  const saveSurveyData = (e) => {
+  const saveSurveyData = async (e) => {
     e.preventDefault();
     if (
       nickname.trim() === "" ||
@@ -39,14 +42,41 @@ export default function SurveyPage() {
       setOpenNotification(true);
       return;
     }
+
     localStorage.setItem("nickname", nickname);
     localStorage.setItem("likes", JSON.stringify(likes));
     localStorage.setItem("residence", location);
     localStorage.setItem("daily_routine", dailyRoutine);
     localStorage.setItem("personal_goals", personalGoal);
-    localStorage.setItem("detailed_likes", JSON.stringify(
-      likes.map((like)=>([like.split(" ")[1],"I especially like ..."]))
-    ));
+    localStorage.setItem(
+      "detailed_likes",
+      JSON.stringify(likes.map((like) => [like.split(" ")[1], "I especially like ..."]))
+    );
+
+    try {
+      setLoading(true);
+      const accessToken = await checkAuth(navigate);
+      await fetch("http://localhost:8000/user/save_survey_result", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          nickname,
+          likes,
+          residence: location,
+          daily_routine: dailyRoutine,
+          personal_goals: personalGoal,
+        }),
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+
     navigate("/");
   };
 
@@ -159,7 +189,7 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="w-80 flex flex-col items-center justify-center bg-gray-100">
+    <div className="w-80 flex flex-col items-center justify-center bg-gray-100 relative">
       <ErrorNotification
         open={openNotification}
         message="Please fill in all fields"
@@ -214,6 +244,7 @@ export default function SurveyPage() {
           </div>
         </div>
       </div>
+      {loading && <LoadingOverlay />}
     </div>
   );
 }
