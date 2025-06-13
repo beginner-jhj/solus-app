@@ -22,6 +22,13 @@ export default function Layout() {
   const profileBox = useRef();
 
   useEffect(() => {
+    const didSurvey = localStorage.getItem("didSurvey");
+    if (!didSurvey) {
+      navigate("/survey");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const getProfile = async () => {
       try {
         const accessToken = await checkAuth(navigate);
