@@ -43,11 +43,7 @@ export default function SurveyPage() {
       return;
     }
 
-    // localStorage.setItem("nickname", nickname);
-    // localStorage.setItem("likes", JSON.stringify(likes.map((like)=>([like.split(" ")[1], []]))));
-    // localStorage.setItem("residence", location);
-    // localStorage.setItem("daily_routine", dailyRoutine);
-    // localStorage.setItem("personal_goals", personalGoal);
+    localStorage.setItem("nickname", nickname);
 
     localStorage.setItem('didSurvey', true);
 
