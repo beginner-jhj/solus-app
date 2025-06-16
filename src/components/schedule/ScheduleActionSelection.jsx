@@ -24,7 +24,7 @@ export function ScheduleActionSelection() {
     if (!isDragging && selectedDays.length > 0) {
       setShow(true);
       const ref = selectedDays[selectedDays.length - 1].ref;
-      const rect = ref.current.getBoundingClientRect();
+      const rect = ref.current?.getBoundingClientRect();
       setPositon({ top: rect.top, left: rect.left });
     } else {
       setShow(false);
