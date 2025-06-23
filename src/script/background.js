@@ -53,4 +53,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if(message.type === "OPEN_URL") {
+    console.log("OPEN_URL", message.url);
+    chrome.tabs.create({ url: message.url });
+    sendResponse({ success: true });
+    return true;
+  }
+
 });

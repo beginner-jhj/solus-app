@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RecommendedEvent } from '../../schedule/ChatResponse'; // Assuming ChatResponse.jsx is in this path
 import { checkAuth } from '../../../lib/lib.js'; // Adjusted path
@@ -8,6 +8,7 @@ import {openIndexedDB,getDataByKeyFromIndexedDB,updateDataToIndexedDB} from '../
 export function AssistantMessage({ message }) {
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
   const navigate = useNavigate();
+  const assistantHtmlResponseContainerRef = useRef();
 
   useEffect(() => {
     console.log("message.data", message.data);
@@ -22,6 +23,7 @@ export function AssistantMessage({ message }) {
       setCurrentRecommendations([]); // Clear recommendations if not present
     }
   }, [message.data?.suggestedSchedules]);
+
 
   let responseToRender = "Assistant is processing..."; // Default fallback
 
@@ -96,6 +98,27 @@ export function AssistantMessage({ message }) {
   // Determine if the final responseToRender string contains HTML
   const useHTML = typeof responseToRender === 'string' && /[<>]/g.test(responseToRender);
 
+  useEffect(() => {
+    const handleClick = async (e) => {
+      const target = e.target;
+      if (target.tagName === 'A') {
+        e.preventDefault();
+        const url = target.getAttribute('href');
+
+        alert("If you open this url, the popup will close.")
+
+        await chrome.runtime.sendMessage({ type: "OPEN_URL", url });
+      }
+    };
+
+    const container = assistantHtmlResponseContainerRef.current;
+    container?.addEventListener('click', handleClick);
+
+    return () => {
+      container?.removeEventListener('click', handleClick);
+    };
+  }, [assistantHtmlResponseContainerRef,responseToRender]);
+
   return (
     <div className="my-2 flex justify-start">
       {/* Error display logic */}
@@ -108,7 +131,7 @@ export function AssistantMessage({ message }) {
         // Normal response rendering path
         <div className="bg-slate-100 text-slate-800 py-2 px-4 rounded-xl shadow-md max-w-md lg:max-w-lg prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none break-words">
           {useHTML ? (
-            <div dangerouslySetInnerHTML={{ __html: responseToRender }} />
+            <div ref={assistantHtmlResponseContainerRef} dangerouslySetInnerHTML={{ __html: responseToRender }} />
           ) : (
             responseToRender
           )}
