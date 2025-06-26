@@ -135,9 +135,8 @@ export function AssistantMessage({ message }) {
         duration={5000}
       />
       <div className="flex flex-col items-start">
-        <div className="flex items-center gap-x-2 mb-1">
+        <div className="flex items-center mb-1">
           <img src={logo} className="w-5 h-5 rounded-full border" alt="Assistant" />
-          <span className="font-semibold text-sm">Solus Assistant</span>
         </div>
         {message.data && message.data.error ? (
           <div className="bg-red-100 text-red-700 p-3 rounded-xl shadow-md max-w-md lg:max-w-lg break-words">

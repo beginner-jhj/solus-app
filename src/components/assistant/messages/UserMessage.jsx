@@ -2,13 +2,11 @@ import { store } from "../../../store/store.js";
 
 export function UserMessage({ message }) {
   const { profileImageURL } = store();
-  const nickname = localStorage.getItem("nickname");
 
   return (
     <div className="my-2 flex justify-end">
       <div className="flex flex-col items-end">
-        <div className="flex items-center gap-x-2 mb-1">
-          <span className="font-semibold text-sm">{nickname}</span>
+        <div className="flex items-center mb-1">
           <img
             src={profileImageURL}
             className="w-5 h-5 rounded-full border"
