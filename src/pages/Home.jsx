@@ -1,7 +1,68 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { checkAuth } from "../lib/lib.js";
+
 export default function Home() {
-    return (
-        <div>
-            <h1>Home</h1>
-        </div>
-    );
+  const navigate = useNavigate();
+  const [todayEvents, setTodayEvents] = useState([]);
+
+  useEffect(() => {
+    const fetchTodayEvents = async () => {
+      try {
+        const today = new Date();
+        const accessToken = await checkAuth(navigate);
+
+        if (!accessToken) return;
+
+        const response = await fetch(
+          `http://localhost:8000/schedule/get_events?year=${today.getFullYear()}&month=${
+            today.getMonth() + 1
+          }&day=${today.getDate()}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        const { data } = await response.json();
+        if (response.ok) {
+          setTodayEvents(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTodayEvents();
+  }, [navigate]);
+
+  return (
+    <div className="w-full h-full grid grid-rows-2 gap-y-2">
+      {/* Assistant suggested message/action */}
+      <div className="w-full h-full border rounded-md p-2"></div>
+
+      {/* Today's schedule */}
+      <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 border rounded-md p-2">
+        {todayEvents.length === 0 ? (
+          <span className="text-sm text-gray-500">No events for today.</span>
+        ) : (
+          todayEvents.map((event) => (
+            <div
+              key={event.id}
+              className="p-2 border rounded-md flex flex-col"
+            >
+              <span className="font-semibold text-sm">{event.title}</span>
+              <span className="text-xs text-gray-500">
+                {event.start_time ? event.start_time.slice(0, 5) : ""} -
+                {" "}
+                {event.end_time ? event.end_time.slice(0, 5) : ""}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
