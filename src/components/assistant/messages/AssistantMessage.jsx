@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RecommendedEvent } from '../../schedule/ChatResponse'; // Assuming ChatResponse.jsx is in this path
-import { checkAuth } from '../../../lib/lib.js'; // Adjusted path
+import { RecommendedEvent } from '../../schedule/ChatResponse'; 
+import { checkAuth } from '../../../lib/lib.js'; 
+import ErrorNotification from '../../common/ErrorNotification.jsx';
 import {openIndexedDB,getDataByKeyFromIndexedDB,updateDataToIndexedDB} from '../../../lib/lib.js';
 
 
@@ -9,9 +10,10 @@ export function AssistantMessage({ message }) {
   const [currentRecommendations, setCurrentRecommendations] = useState([]);
   const navigate = useNavigate();
   const assistantHtmlResponseContainerRef = useRef();
+  const [openErrorNotification, setOpenErrorNotification] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("An error occurred while accepting the event. Please try again.");
 
   useEffect(() => {
-    console.log("message.data", message.data);
     if (message.data && message.data.response && message.data.suggestedSchedules && message.data.suggestedSchedules.length > 0) {
       // Ensure each recommendation has a unique ID if not provided by backend
       setCurrentRecommendations(
@@ -63,11 +65,11 @@ export function AssistantMessage({ message }) {
 
       } else {
         console.error("Failed to accept event:", response.status, await response.text());
-        // Optionally, display an error to the user
+        setOpenErrorNotification(true);
       }
     } catch (err) {
       console.error("Error accepting event:", err);
-      // Optionally, display an error to the user
+      setOpenErrorNotification(true);
     }
   };
 
@@ -78,7 +80,7 @@ export function AssistantMessage({ message }) {
       }
     } catch (err) {
       console.error("Error in handleAcceptAll:", err);
-      // Optionally, display an error to the user
+      setOpenErrorNotification(true);
     }
   };
 
@@ -105,9 +107,12 @@ export function AssistantMessage({ message }) {
         e.preventDefault();
         const url = target.getAttribute('href');
 
-        alert("If you open this url, the popup will close.")
+        setErrorMessage("If you click on this link, this popup will close in 3 seconds.");
+        setOpenErrorNotification(true);
 
-        await chrome.runtime.sendMessage({ type: "OPEN_URL", url });
+        setTimeout(async()=>{
+          await chrome.runtime.sendMessage({ type: "OPEN_URL", url });
+        },3000)
       }
     };
 
@@ -121,6 +126,13 @@ export function AssistantMessage({ message }) {
 
   return (
     <div className="my-2 flex justify-start">
+      <ErrorNotification
+        open={openErrorNotification}
+        message={errorMessage}
+        onClose={() => setOpenErrorNotification(false)}
+        severity="error"
+        duration={5000}
+      />
       {/* Error display logic */}
       {message.data && message.data.error ? (
         <div className="bg-red-100 text-red-700 p-3 rounded-xl shadow-md max-w-md lg:max-w-lg break-words">

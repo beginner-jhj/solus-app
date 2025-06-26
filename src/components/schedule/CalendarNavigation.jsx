@@ -35,7 +35,7 @@ export function CalendarNavigation({ month }) {
       >
         <img src={prevIcon} className="w-4 h-4 cursor-pointer"></img>
       </button>
-      <span className="font-semibold">{month}</span>
+      <span className="font-semibold">{new Date().getFullYear()} {month}</span>
       <div className="w-full relative flex items-center justify-center">
         <button
           onClick={() => {

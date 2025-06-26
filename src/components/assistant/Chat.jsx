@@ -104,7 +104,9 @@ export function Chat(){
                     body: JSON.stringify({ 
                         message: messageContent, 
                         currentLocation,
-                        chatHistory:chatHistory.slice(-10) // Send the chat history to mainAgent
+                        chatHistory:chatHistory.slice(-10), // Send the chat history to mainAgent
+                        clientDate: new Date().toISOString().split("T")[0],
+                        clientTime: new Date().toTimeString().split(" ")[0],
                     }),
                 },
                 setError,
