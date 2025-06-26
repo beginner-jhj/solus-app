@@ -38,21 +38,30 @@ export default function Home() {
     fetchTodayEvents();
   }, [navigate]);
 
+  const categoryBorderColors = {
+    Work: "border-blue-300",
+    Study: "border-green-300",
+    Personal: "border-yellow-300",
+    Exercise: "border-red-300",
+  };
+
   return (
-    <div className="w-full h-full grid grid-rows-2 gap-y-2">
+    <div className="w-full h-full grid grid-rows-[1fr_2fr] gap-y-2">
       {/* Assistant suggested message/action */}
-      <div className="w-full h-full border rounded-md p-2"></div>
+      <div className="w-full h-full p-2"></div>
 
       {/* Today's schedule */}
-      <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 border rounded-md p-2">
+      <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 p-2">
         {todayEvents.length === 0 ? (
           <span className="text-sm text-gray-500">No events for today.</span>
         ) : (
-          todayEvents.map((event) => (
-            <div
-              key={event.id}
-              className="p-2 border rounded-md flex flex-col"
-            >
+          <div className="flex flex-col gap-y-1">
+            <span className="font-semibold text-sm">Today's Schedule</span>
+            {todayEvents.map((event) => (
+              <div
+                key={event.id}
+                className={`p-2 rounded-md border flex items-center justify-between ${categoryBorderColors[event.event_category] || "bg-gray-100 text-gray-700 border-gray-300"}`}
+              >
               <span className="font-semibold text-sm">{event.title}</span>
               <span className="text-xs text-gray-500">
                 {event.start_time ? event.start_time.slice(0, 5) : ""} -
@@ -60,7 +69,8 @@ export default function Home() {
                 {event.end_time ? event.end_time.slice(0, 5) : ""}
               </span>
             </div>
-          ))
+          ))}
+          </div>
         )}
       </div>
     </div>
