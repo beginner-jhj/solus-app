@@ -1,6 +1,6 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout.jsx";
-import TodaySchedule from "./pages/TodaySchedule.jsx";
+import Home from "./pages/Home.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
 import SigninForm from "./pages/Signin.jsx";
@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<TodaySchedule />}></Route>
+          <Route index element={<Home />}></Route>
           <Route path="schedule" element={<Schedule />}></Route>
           <Route path="assistant" element={<AssistantPage />} />
         </Route>
