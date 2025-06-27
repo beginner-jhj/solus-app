@@ -51,22 +51,17 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full h-full grid grid-rows-[1fr_2fr] gap-y-2">
-      {/* Assistant suggested message/action */}
+    <div className="w-full h-full grid grid-rows-[1fr_1fr] gap-y-2">
       <div className="w-full h-full p-2"></div>
-
-      {/* Today's schedule */}
-      <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 p-2">
-        <div className="flex flex-col gap-y-1">
-          {todayEvents.length === 0 ? (
-            <span className="text-semibold text-gray-500">No events for today.</span>
-          ) : (
-            <span className="font-semibold text-sm">Today's Schedule</span>
-          )}
-          {todayEvents.map((event,index) => (
-              <div
+      <div className="w-full h-full grid grid-rows-[10%_90%] items-center justify-items-start p-2">
+        <span className="font-semibold text-sm">Today's Schedule</span>
+        <div className="w-full h-full flex flex-col gap-y-2 overflow-y-auto">
+          {todayEvents.length > 0 && (
+            <>
+            {todayEvents.map((event,index) => (
+            <div
                 key={index}
-                className={`p-2 rounded-md border flex items-center justify-between ${categoryBorderColors[event.event_category] || "bg-gray-100 text-gray-700 border-gray-300"}`}
+                className={`p-2 rounded-md border-2 flex items-center justify-between hover:shadow-md transition-all ${categoryBorderColors[event.event_category] || "bg-gray-100 text-gray-700 border-gray-300"}`}
               >
               <span className="font-semibold text-sm">{event.title}</span>
               <span className="text-xs text-gray-500">
@@ -75,7 +70,12 @@ export default function Home() {
                 {event.end_time ? event.end_time.slice(0, 5) : ""}
               </span>
             </div>
-          ))}
+            ))}
+            </>
+          )}
+          {todayEvents.length === 0 && (
+            <span className="font-semibold text-gray-500 text-sm">No events for today.</span>
+          )} 
         </div>
       </div>
     </div>

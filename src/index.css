@@ -9,6 +9,28 @@ body {
   height: 400px;
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #304F8C;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track-piece:start {
+  margin-top: 50px;
+}
+
+::-webkit-scrollbar-track-piece:end {
+  margin-bottom: 50px;
+}
+
+
 @keyframes bounceIn {
   0% {
     transform: translateY(0);
