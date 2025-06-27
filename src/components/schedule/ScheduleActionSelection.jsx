@@ -25,7 +25,7 @@ export function ScheduleActionSelection() {
       setShow(true);
       const ref = selectedDays[selectedDays.length - 1].ref;
       const rect = ref.current?.getBoundingClientRect();
-      setPositon({ top: rect.top, left: rect.left });
+      setPositon({ top: rect?.top, left: rect?.left });
     } else {
       setShow(false);
       setPositon({ top: 0, left: 0 });
@@ -42,13 +42,13 @@ export function ScheduleActionSelection() {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      if (iconRect.top <= windowHeight / 2) {
+      if (iconRect?.top <= windowHeight / 2) {
         top = iconRect.top - 50;
       } else {
         top = iconRect.top - windowHeight / 2;
       }
 
-      if (iconRect.left <= windowWidth / 2) {
+      if (iconRect?.left <= windowWidth / 2) {
         left = iconRect.left - 50;
       } else {
         left = iconRect.left - windowWidth / 2;

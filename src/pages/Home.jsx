@@ -59,7 +59,7 @@ export default function Home() {
       <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 p-2">
         <div className="flex flex-col gap-y-1">
           {todayEvents.length === 0 ? (
-            <span className="text-sm text-gray-500">No events for today.</span>
+            <span className="text-semibold text-gray-500">No events for today.</span>
           ) : (
             <span className="font-semibold text-sm">Today's Schedule</span>
           )}
