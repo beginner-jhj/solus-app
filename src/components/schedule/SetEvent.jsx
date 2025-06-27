@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { checkAuth, fetchWithErrorHandling } from "../../lib/lib";
 import { monthNames } from "./schedulePageStore.js";
 import ErrorNotification from "../common/ErrorNotification";
+import { eventCategoryStyles } from "../../store/store.js";
 
 export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [categorySelectBorderColor, setCategorySelectBorderColor] =
-    useState("border-blue-400");
+  const borderClass =
+    eventCategoryStyles[eventCategory]?.border || "border-blue-400";
 
   const handleChangeValue = (e, setState) => {
     setState(e.target.value);
@@ -63,22 +64,6 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
     }
   };
 
-  useEffect(() => {
-    switch (eventCategory) {
-      case "Work":
-        setCategorySelectBorderColor("border-blue-400");
-        break;
-      case "Personal":
-        setCategorySelectBorderColor("border-yellow-400");
-        break;
-      case "Study":
-        setCategorySelectBorderColor("border-green-400");
-        break;
-      case "Exercise":
-        setCategorySelectBorderColor("border-red-400");
-        break;
-    }
-  }, [eventCategory]);
 
   return (
     <div className="bg-white p-2 rounded-lg w-full max-w-md">
@@ -125,7 +110,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
             <select
               value={eventCategory}
               onChange={(e) => setEventCategory(e.target.value)}
-              className={`border-2 ${categorySelectBorderColor} focus:outline-none focus:${categorySelectBorderColor} cursor-pointer rounded-md p-1`}
+              className={`border-2 ${borderClass} focus:outline-none cursor-pointer rounded-md p-1`}
             >
               <option value="Work">Work</option>
               <option value="Personal">Personal</option>

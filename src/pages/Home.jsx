@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { checkAuth } from "../lib/lib.js";
+import { eventCategoryStyles } from "../store/store.js";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -103,6 +104,7 @@ export default function Home() {
           );
           localStorage.setItem(
             "lastSuggestionTime",
+
             `${new Date().getHours()}:${new Date().getMinutes()}`
           );
         }
@@ -117,12 +119,6 @@ export default function Home() {
 
   }, []);
 
-  const categoryBorderColors = {
-    Work: "border-blue-400",
-    Study: "border-green-400",
-    Personal: "border-yellow-400",
-    Exercise: "border-red-400",
-  };
 
   return (
     <div className="w-full h-full flex flex-col gap-y-3 p-2">
@@ -141,7 +137,9 @@ export default function Home() {
             todayEvents.map((event, index) => (
               <div
                 key={index}
-                className={`p-2 rounded-md border-l-4 shadow-sm flex items-center justify-between bg-white ${categoryBorderColors[event.event_category] || "border-gray-300"}`}
+
+                className={`p-2 rounded-md border-l-4 shadow-sm flex items-center justify-between bg-white ${eventCategoryStyles[event.event_category]?.border || "border-gray-300"}`}
+
               >
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm">{event.title}</span>
