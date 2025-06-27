@@ -112,33 +112,40 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full h-full grid grid-rows-[1fr_1fr] gap-y-2">
-      <div className="w-full h-full p-2">
-
+    <div className="w-full h-full flex flex-col gap-y-3 p-2">
+      <div className="flex-1 w-full overflow-y-auto">
+        <div className="w-full h-full bg-blue-50 border border-blue-200 rounded-md shadow-sm p-3 flex flex-col">
+          <span className="font-semibold text-blue-700 text-sm mb-1">Suggestion</span>
+          <p className="text-sm text-gray-700 whitespace-pre-line flex-grow">
+            {suggestion || "No suggestions right now."}
+          </p>
+        </div>
       </div>
-      <div className="w-full h-full grid grid-rows-[10%_90%] items-center justify-items-start gap-y-2">
-        <span className="font-semibold text-sm">Today's Schedule</span>
-        <div className="w-full h-full flex flex-col gap-y-1 overflow-y-auto">
-          {todayEvents.length > 0 && (
-            <>
-            {todayEvents.map((event,index) => (
-            <div
+      <div className="flex-1 w-full flex flex-col overflow-y-auto">
+        <span className="font-semibold text-sm mb-1">Today's Schedule</span>
+        <div className="flex flex-col gap-y-2 overflow-y-auto">
+          {todayEvents.length > 0 ? (
+            todayEvents.map((event, index) => (
+              <div
                 key={index}
-                className={`p-2 rounded-md border-2 flex items-center justify-between hover:shadow-md transition-all ${categoryBorderColors[event.event_category] || "bg-gray-100 text-gray-700 border-gray-300"}`}
+                className={`p-2 rounded-md border-l-4 shadow-sm flex items-center justify-between bg-white ${categoryBorderColors[event.event_category] || "border-gray-300"}`}
               >
-              <span className="font-semibold text-sm">{event.title}</span>
-              <span className="text-xs text-gray-500">
-                {event.start_time ? event.start_time.slice(0, 5) : ""} -
-                {" "}
-                {event.end_time ? event.end_time.slice(0, 5) : ""}
-              </span>
-            </div>
-            ))}
-            </>
-          )}
-          {todayEvents.length === 0 && (
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm">{event.title}</span>
+                  {event.description && (
+                    <span className="text-xs text-gray-500 whitespace-pre-line">
+                      {event.description}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500">
+                  {event.start_time ? event.start_time.slice(0, 5) : ""} - {event.end_time ? event.end_time.slice(0, 5) : ""}
+                </span>
+              </div>
+            ))
+          ) : (
             <span className="font-semibold text-gray-500 text-sm">No events for today.</span>
-          )} 
+          )}
         </div>
       </div>
     </div>
