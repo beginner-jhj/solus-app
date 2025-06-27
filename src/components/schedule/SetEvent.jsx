@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { checkAuth, fetchWithErrorHandling } from "../../lib/lib";
 import { monthNames } from "./schedulePageStore.js";
 import ErrorNotification from "../common/ErrorNotification";
-import { schedulePageStore } from "./schedulePageStore.js";
 
 export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
   const navigate = useNavigate();
-  const { eventCategory, setEventCategory } = schedulePageStore();
+  const [eventCategory, setEventCategory] = useState("Work");
   const [error, setError] = useState({ open: false, message: "" });
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -83,7 +82,8 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
 
   return (
     <div className="bg-white p-2 rounded-lg w-full max-w-md">
-      <h2 className="text-xl font-semibold mb-4">Add Event</h2>
+      <ErrorNotification open={error.open} message={error.message} />
+      <h2 className="text-xl font-semibold mb-4">Add New Event</h2>
       <details className="w-full" open>
         <summary className="w-full">
           <input

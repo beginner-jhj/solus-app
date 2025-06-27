@@ -22,7 +22,7 @@ export function DayModal() {
   } = schedulePageStore();
 
   useEffect(() => {
-    const getSavedEvents = async () => {
+    const getEvents = async () => {
       try {
         if (selectedDay.month && selectedDay.day) {
           const accessToken = await checkAuth(navigate);
@@ -49,7 +49,7 @@ export function DayModal() {
         console.error(err);
       }
     };
-    getSavedEvents();
+    getEvents();
   }, [selectedDay, trigger]);
 
   useEffect(()=>{

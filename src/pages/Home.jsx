@@ -29,6 +29,11 @@ export default function Home() {
         const { data } = await response.json();
         if (response.ok) {
           setTodayEvents(data);
+          const storedEvents = JSON.parse(localStorage.getItem("todayEvents"));
+          if(storedEvents[0]!==new Date().toISOString().split("T")[0]){
+            const dataToStore = data.length === 0 ? [] : data.map((event)=>({title:event.title,description:event.description,startTime:event.start_time,endTime:event.end_time}));
+            localStorage.setItem("todayEvents", JSON.stringify([new Date().toISOString().split("T")[0],dataToStore]));
+          }
         }
       } catch (err) {
         console.error(err);
@@ -52,14 +57,15 @@ export default function Home() {
 
       {/* Today's schedule */}
       <div className="w-full h-full overflow-y-auto flex flex-col gap-y-2 p-2">
-        {todayEvents.length === 0 ? (
-          <span className="text-sm text-gray-500">No events for today.</span>
-        ) : (
-          <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1">
+          {todayEvents.length === 0 ? (
+            <span className="text-sm text-gray-500">No events for today.</span>
+          ) : (
             <span className="font-semibold text-sm">Today's Schedule</span>
-            {todayEvents.map((event) => (
+          )}
+          {todayEvents.map((event,index) => (
               <div
-                key={event.id}
+                key={index}
                 className={`p-2 rounded-md border flex items-center justify-between ${categoryBorderColors[event.event_category] || "bg-gray-100 text-gray-700 border-gray-300"}`}
               >
               <span className="font-semibold text-sm">{event.title}</span>
@@ -70,8 +76,7 @@ export default function Home() {
               </span>
             </div>
           ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
