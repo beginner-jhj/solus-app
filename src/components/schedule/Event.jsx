@@ -22,10 +22,10 @@ export function Event({
   }) {
     // Color and icon for category
     const categoryColors = {
-      Work: "bg-blue-100 text-blue-700 border-blue-300",
-      Study: "bg-green-100 text-green-700 border-green-300",
-      Personal: "bg-yellow-100 text-yellow-700 border-yellow-300",
-      Exercise: "bg-red-100 text-red-700 border-red-300",
+      Work: "bg-blue-100 text-blue-700 border-blue-400",
+      Study: "bg-green-100 text-green-700 border-green-400",
+      Personal: "bg-yellow-100 text-yellow-700 border-yellow-400",
+      Exercise: "bg-red-100 text-red-700 border-red-400",
     };
     const categoryClass =
       categoryColors[eventCategory] ||

@@ -5,10 +5,10 @@ export function Day({ day, month, events }) {
   const { setOpenModal, setSelectedDay } = schedulePageStore();
   const [isToday, setIsToday] = useState(false);
   const divColorByCategory = {
-    Work: "bg-blue-500",
-    Personal: "bg-yellow-500",
-    Study: "bg-green-500",
-    Exercise: "bg-red-500",
+    Work: "bg-blue-400",
+    Personal: "bg-yellow-400",
+    Study: "bg-green-400",
+    Exercise: "bg-red-400",
   };
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function Day({ day, month, events }) {
         setSelectedDay({ day, month });
       }}
       className={`w-full h-[40px] relative flex flex-col items-start justify-start p-1 rounded-md cursor-pointer border ${
-        isToday ? "border-[#295FA6] shadow-md" : "border-gray-400"
+        isToday ? "border-blue-600 shadow-md" : "border-gray-400"
       }`}
     >
       <span className="font-semibold">{day}</span>

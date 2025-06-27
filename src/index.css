@@ -7,6 +7,8 @@ body {
 
 #root{
   height: 400px;
+  min-height: 360px;
+  max-height: 600px;
 }
 
 ::-webkit-scrollbar {
@@ -18,7 +20,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #304F8C;
+  background: #295FA6;
   border-radius: 5px;
 }
 
@@ -61,7 +63,7 @@ body {
   width: 8px;
   height: 8px;
   margin: 0 4px;
-  background-color: #304F8C;
+  background-color: #295FA6;
   border-radius: 50%;
   animation: bouncing-loader 0.6s infinite alternate;
 }
