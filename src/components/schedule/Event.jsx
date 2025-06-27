@@ -7,6 +7,7 @@ import editIconGray from "../../assets/pencil-gray.svg";
 import completeIcon from "../../assets/complete.svg";
 import { checkAuth } from "../../lib/lib.js";
 import { schedulePageStore } from "./schedulePageStore.js";
+import { eventCategoryStyles } from "../../store/store.js";
 
 export function Event({
     index,
@@ -20,16 +21,12 @@ export function Event({
     showCompleteIcon,
     showDeleteIcon,
   }) {
-    // Color and icon for category
-    const categoryColors = {
-      Work: "bg-blue-100 text-blue-700 border-blue-400",
-      Study: "bg-green-100 text-green-700 border-green-400",
-      Personal: "bg-yellow-100 text-yellow-700 border-yellow-400",
-      Exercise: "bg-red-100 text-red-700 border-red-400",
-    };
+    // classes for category label and borders
     const categoryClass =
-      categoryColors[eventCategory] ||
+      eventCategoryStyles[eventCategory]?.label ||
       "bg-gray-100 text-gray-700 border-gray-300";
+    const borderClass =
+      eventCategoryStyles[eventCategory]?.border || "border-gray-300";
   
     // For time icon
     const clockIcon = (
@@ -143,7 +140,7 @@ export function Event({
     return (
       <div
         key={index}
-        className={`w-full rounded-lg border ${categoryClass} shadow-sm p-3 mb-1 hover:shadow-lg transition-all flex flex-col items-start justify-start`}
+        className={`w-full rounded-md border-l-4 ${borderClass} bg-white shadow-sm p-3 mb-1 hover:shadow-md transition-all flex flex-col items-start justify-start`}
       >
         <div className="w-full flex items-center justify-between mb-1">
           {editing ? (

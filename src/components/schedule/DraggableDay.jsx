@@ -1,6 +1,7 @@
 import { schedulePageStore,monthNames } from "./schedulePageStore";
 import { useEffect, useState } from "react";
 import { useRef } from "react";
+import { eventCategoryStyles } from "../../store/store.js";
 
 export function DraggableDay({ day, month, events }) {
   const { isDragging, setIsDragging, setSelectedDays, selectedDays, currentIndex } =
@@ -8,12 +9,6 @@ export function DraggableDay({ day, month, events }) {
   const [isSelected, setIsSelected] = useState(false);
   const [isToday, setIsToday] = useState(false);
   const dayRef = useRef();
-  const divColorByCategory = {
-    Work: "bg-blue-400",
-    Personal: "bg-yellow-400",
-    Study: "bg-green-400",
-    Exercise: "bg-red-400",
-  };
 
   useEffect(() => {
     setIsSelected(false);
@@ -68,7 +63,7 @@ export function DraggableDay({ day, month, events }) {
         <div
           key={index}
           className={`w-full h-[3px] rounded-md mt-0.5 ${
-            divColorByCategory[event.event_category]
+            eventCategoryStyles[event.event_category]?.bg
           }`}
         ></div>
       ))}

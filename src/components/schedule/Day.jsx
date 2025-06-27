@@ -1,15 +1,10 @@
 import { schedulePageStore, monthNames } from "./schedulePageStore";
 import { useEffect, useState } from "react";
+import { eventCategoryStyles } from "../../store/store.js";
 
 export function Day({ day, month, events }) {
   const { setOpenModal, setSelectedDay } = schedulePageStore();
   const [isToday, setIsToday] = useState(false);
-  const divColorByCategory = {
-    Work: "bg-blue-400",
-    Personal: "bg-yellow-400",
-    Study: "bg-green-400",
-    Exercise: "bg-red-400",
-  };
 
   useEffect(() => {
     const today = new Date();
@@ -35,7 +30,7 @@ export function Day({ day, month, events }) {
         <div
           key={index}
           className={`w-full h-[3px] rounded-md mt-0.5 ${
-            divColorByCategory[event.event_category]
+            eventCategoryStyles[event.event_category]?.bg
           }`}
         ></div>
       ))}
