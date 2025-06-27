@@ -48,23 +48,25 @@ export default function Home() {
 
   useEffect(() => {
     const timeToMinutes = (timeStr) => {
-      const [hours, minutes] = timeStr?.split(":")?.map(Number);
+      if (!timeStr || typeof timeStr !== "string" || !timeStr.includes(":")) return 0;
+      const [hours, minutes] = timeStr.split(":").map(Number);
       return hours * 60 + minutes;
-    }
+    };
     
     const getCurrentTimeInMinutes = () => {
       const now = new Date();
       return now.getHours() * 60 + now.getMinutes();
 
-    }
+    };
 
     const lastSuggestionTimeInMinutes = timeToMinutes(lastSuggestionTime);
 
     
     const within1HourSchedule = todayEventsStore[1].filter((event)=>{
-      const targetTime = timeToMinutes(event.startTime)
-      const currentTime = getCurrentTimeInMinutes()
-      return Math.abs(targetTime - currentTime) <= 80
+      console.log("event.startTime:",event.startTime);
+      const targetTime = timeToMinutes(event.startTime);
+      const currentTime = getCurrentTimeInMinutes();
+      return Math.abs(targetTime - currentTime) <= 80;
     })
 
     if(within1HourSchedule.length === 0 && Math.abs(getCurrentTimeInMinutes() - lastSuggestionTimeInMinutes) <= 30){
@@ -101,7 +103,7 @@ export default function Home() {
           );
           localStorage.setItem(
             "lastSuggestionTime",
-            new Date().toISOString().split("T")[1]
+            `${new Date().getHours()}:${new Date().getMinutes()}`
           );
         }
       } catch (err) {
