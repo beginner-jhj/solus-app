@@ -74,7 +74,7 @@ export default function Layout() {
   useEffect(profileBoxToggle, [openProfilBox]);
 
   return (
-    <div className="w-80 h-[400px] bg-white grid items-center justify-items-center grid-rows-[30px_30px_320px] gap-y-[15px]">
+    <div className="w-[450px] h-[560px] bg-white grid items-center justify-items-center grid-rows-[40px_40px_1fr] gap-y-[15px]">
       <header className="w-full h-full flex items-center justify-between">
         <div className="h-full flex">
           <img className="w-8 h-8" src={logo}></img>
