@@ -140,7 +140,7 @@ export function Event({
     return (
       <div
         key={index}
-        className={`w-full rounded-md border-l-4 ${borderClass} bg-white shadow-sm p-3 mb-1 hover:shadow-md transition-all flex flex-col items-start justify-start`}
+        className={`w-full rounded-md border-l-4 ${borderClass} bg-white p-3 mb-1 hover:shadow-md transition-all flex flex-col items-start justify-start`}
       >
         <div className="w-full flex items-center justify-between mb-1">
           {editing ? (
