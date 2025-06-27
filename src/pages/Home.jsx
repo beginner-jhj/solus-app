@@ -64,7 +64,6 @@ export default function Home() {
 
     
     const within1HourSchedule = todayEventsStore[1].filter((event)=>{
-      console.log("event.startTime:",event.startTime);
       const targetTime = timeToMinutes(event.startTime);
       const currentTime = getCurrentTimeInMinutes();
       return Math.abs(targetTime - currentTime) <= 80;
