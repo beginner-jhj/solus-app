@@ -189,7 +189,7 @@ export function Chat(){
                         }
                     }}
                     placeholder="Ask me anything..."
-                    className="w-full h-full p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 rounded-xl shadow-sm bg-white text-slate-700 placeholder-slate-400 text-sm"
+                    className="w-full h-full p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 rounded-xl shadow-sm bg-white text-slate-700 placeholder-slate-400 text-base"
                 />
             </div>
         </>
