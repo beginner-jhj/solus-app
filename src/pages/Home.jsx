@@ -29,11 +29,8 @@ export default function Home() {
         const { data } = await response.json();
         if (response.ok) {
           setTodayEvents(data);
-          const storedEvents = JSON.parse(localStorage.getItem("todayEvents"));
-          if(storedEvents[0]!==new Date().toISOString().split("T")[0]){
-            const dataToStore = data.length === 0 ? [] : data.map((event)=>({title:event.title,description:event.description,startTime:event.start_time,endTime:event.end_time}));
-            localStorage.setItem("todayEvents", JSON.stringify([new Date().toISOString().split("T")[0],dataToStore]));
-          }
+          const dataToStore = data.length === 0 ? [] : data.map((event)=>({title:event.title,description:event.description,startTime:event.start_time,endTime:event.end_time}));
+          localStorage.setItem("todayEvents", JSON.stringify([new Date().toISOString().split("T")[0],dataToStore]));
         }
       } catch (err) {
         console.error(err);
@@ -52,10 +49,12 @@ export default function Home() {
 
   return (
     <div className="w-full h-full grid grid-rows-[1fr_1fr] gap-y-2">
-      <div className="w-full h-full p-2"></div>
-      <div className="w-full h-full grid grid-rows-[10%_90%] items-center justify-items-start p-2">
+      <div className="w-full h-full p-2">
+
+      </div>
+      <div className="w-full h-full grid grid-rows-[10%_90%] items-center justify-items-start gap-y-2">
         <span className="font-semibold text-sm">Today's Schedule</span>
-        <div className="w-full h-full flex flex-col gap-y-2 overflow-y-auto">
+        <div className="w-full h-full flex flex-col gap-y-1 overflow-y-auto">
           {todayEvents.length > 0 && (
             <>
             {todayEvents.map((event,index) => (
