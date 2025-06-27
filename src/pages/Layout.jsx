@@ -106,13 +106,13 @@ export default function Layout() {
         </div>
         <div className="w-full flex items-center justify-start px-1">
           <img className="w-4 h-5" src={user}></img>
-          <span className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-[#295FA6]">
+          <span className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-blue-600">
             My Profile
           </span>
         </div>
         <div className="w-full flex items-center justify-start">
           <img className="w-6 h-6" src={setting}></img>
-          <span className="font-semibold text-[13px] ml-1 cursor-pointer hover:text-[#295FA6]">
+          <span className="font-semibold text-[13px] ml-1 cursor-pointer hover:text-blue-600">
             Setting
           </span>
         </div>
@@ -120,7 +120,7 @@ export default function Layout() {
           <img className="w-5 h-5" src={logoutIcon}></img>
           <span
             onClick={logout}
-            className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-[#295FA6]"
+            className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-blue-600"
           >
             Logout
           </span>
@@ -166,7 +166,7 @@ function Navigation() {
         className="w-11/12 h-[30px] border border-gray-300 rounded-md bg-white flex items-center justify-center gap-x-1 font-semibold cursor-pointer"
       >
         <img className="h-4" src={isHome ? homeBlack : homeGray}></img>
-        <span className={`${isHome ? "text-[#295FA6]" : "text-gray-300"}`}>
+        <span className={`${isHome ? "text-blue-600" : "text-gray-300"}`}>
           Home
         </span>
       </Link>
@@ -175,7 +175,7 @@ function Navigation() {
         className="w-11/12 h-[30px] border border-gray-300 rounded-md bg-white flex items-center justify-center font-semibold cursor-pointer"
       >
         <img className="h-4" src={isAssistant ? webBalck : webGray}></img>
-        <span className={`${isAssistant ? "text-[#295FA6]" : "text-gray-300"}`}>
+        <span className={`${isAssistant ? "text-blue-600" : "text-gray-300"}`}>
           Assistant
         </span>
       </Link>
@@ -187,7 +187,7 @@ function Navigation() {
           className="h-4"
           src={isSchedule ? scheduleBlack : scheduleGray}
         ></img>
-        <span className={`${isSchedule ? "text-[#295FA6]" : "text-gray-300"}`}>
+        <span className={`${isSchedule ? "text-blue-600" : "text-gray-300"}`}>
           Schedule
         </span>
       </Link>

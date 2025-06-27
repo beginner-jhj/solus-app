@@ -13,7 +13,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [categorySelectBorderColor, setCategorySelectBorderColor] =
-    useState("border-orange-300");
+    useState("border-blue-400");
 
   const handleChangeValue = (e, setState) => {
     setState(e.target.value);
@@ -66,16 +66,16 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
   useEffect(() => {
     switch (eventCategory) {
       case "Work":
-        setCategorySelectBorderColor("border-blue-500");
+        setCategorySelectBorderColor("border-blue-400");
         break;
       case "Personal":
-        setCategorySelectBorderColor("border-yellow-500");
+        setCategorySelectBorderColor("border-yellow-400");
         break;
       case "Study":
-        setCategorySelectBorderColor("border-green-500");
+        setCategorySelectBorderColor("border-green-400");
         break;
       case "Exercise":
-        setCategorySelectBorderColor("border-red-500");
+        setCategorySelectBorderColor("border-red-400");
         break;
     }
   }, [eventCategory]);
@@ -91,7 +91,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
             maxLength={200}
             placeholder="Got something coming up? Add it here."
             value={title}
-            className="w-[230px] border-b border-gray-300 focus:border-[#295FA6] focus:outline-none hover:border-[#295FA6] transition-all "
+            className="w-[230px] border-b border-gray-300 focus:border-blue-600 focus:outline-none hover:border-blue-600 transition-all "
             onChange={(e) => handleChangeValue(e, setTitle)}
           ></input>
         </summary>
@@ -100,7 +100,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
             maxLength={200}
             placeholder="Add a description"
             value={description}
-            className="w-full p-2 border-2 rounded-md border-gray-300 focus:border-[#295FA6] focus:outline-none hover:border-[#295FA6] transition-all "
+            className="w-full p-2 border-2 rounded-md border-gray-300 focus:border-blue-600 focus:outline-none hover:border-blue-600 transition-all "
             onChange={(e) => handleChangeValue(e, setDescription)}
           ></textarea>
           <div className="w-full grid grid-cols-2 gap-x-1 items-center justify-items-center">
@@ -141,7 +141,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
               </button>
               <button
                 onClick={handleSubmit}
-                className="border-2 border-[#295FA6] p-1 rounded-md cursor-pointer text-[#295FA6] hover:bg-[#295FA6] hover:text-white transition-all"
+                className="border-2 border-blue-600 p-1 rounded-md cursor-pointer text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
               >
                 Save
               </button>

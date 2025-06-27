@@ -41,10 +41,10 @@ export default function Home() {
   }, [navigate]);
 
   const categoryBorderColors = {
-    Work: "border-blue-300",
-    Study: "border-green-300",
-    Personal: "border-yellow-300",
-    Exercise: "border-red-300",
+    Work: "border-blue-400",
+    Study: "border-green-400",
+    Personal: "border-yellow-400",
+    Exercise: "border-red-400",
   };
 
   return (

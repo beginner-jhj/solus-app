@@ -9,10 +9,10 @@ export function DraggableDay({ day, month, events }) {
   const [isToday, setIsToday] = useState(false);
   const dayRef = useRef();
   const divColorByCategory = {
-    Work: "bg-blue-500",
-    Personal: "bg-yellow-500",
-    Study: "bg-green-500",
-    Exercise: "bg-red-500",
+    Work: "bg-blue-400",
+    Personal: "bg-yellow-400",
+    Study: "bg-green-400",
+    Exercise: "bg-red-400",
   };
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function DraggableDay({ day, month, events }) {
         setIsDragging(false);
       }}
       className={`w-full h-[40px] relative flex flex-col items-start justify-start p-1 rounded-md cursor-pointer border ${
-        isToday ? "border-[#295FA6] shadow-md" : "border-gray-400"
+        isToday ? "border-blue-600 shadow-md" : "border-gray-400"
       } ${isSelected ? "bg-blue-500 text-white" : "hover:bg-gray-300"}`}
     >
       <span className="font-semibold">{day}</span>
