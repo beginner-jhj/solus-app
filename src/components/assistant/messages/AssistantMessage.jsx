@@ -108,7 +108,7 @@ export function AssistantMessage({ message }) {
         e.preventDefault();
         const url = target.getAttribute('href');
 
-        setErrorMessage("If you click on this link, this popup will close in 3 seconds.");
+        setErrorMessage("You clicked a link. This popup will close in 3 seconds.");
         setOpenErrorNotification(true);
 
         setTimeout(async()=>{

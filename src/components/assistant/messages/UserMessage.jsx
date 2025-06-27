@@ -13,7 +13,7 @@ export function UserMessage({ message }) {
             alt="User"
           />
         </div>
-        <div className="bg-blue-600 text-white py-2 px-4 rounded-xl shadow-md max-w-md lg:max-w-lg break-words text-base">
+        <div className="bg-blue-600 text-white py-2 px-4 rounded-xl shadow-md max-w-md lg:max-w-lg break-words text-sm">
           {message.data.message}
         </div>
       </div>

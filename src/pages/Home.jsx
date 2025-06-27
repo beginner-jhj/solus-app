@@ -5,6 +5,9 @@ import { checkAuth } from "../lib/lib.js";
 export default function Home() {
   const navigate = useNavigate();
   const [todayEvents, setTodayEvents] = useState([]);
+  const [suggestion, setSuggestion] = useState("");
+  const todayEventsStore = JSON.parse(localStorage.getItem("todayEvents"));
+  const lastSuggestionTime = localStorage.getItem("lastSuggestionTime");
 
   useEffect(() => {
     const fetchTodayEvents = async () => {
@@ -39,6 +42,67 @@ export default function Home() {
 
     fetchTodayEvents();
   }, [navigate]);
+
+  useEffect(() => {
+    const timeToMinutes = (timeStr) => {
+      const [hours, minutes] = timeStr?.split(":")?.map(Number);
+      return hours * 60 + minutes;
+    }
+    
+    const getCurrentTimeInMinutes = () => {
+      const now = new Date();
+      return now.getHours() * 60 + now.getMinutes();
+
+    }
+
+    const lastSuggestionTimeInMinutes = timeToMinutes(lastSuggestionTime);
+
+    
+    const within1HourSchedule = todayEventsStore[1].filter((event)=>{
+      const targetTime = timeToMinutes(event.startTime)
+      const currentTime = getCurrentTimeInMinutes()
+      return Math.abs(targetTime - currentTime) <= 80
+    })
+
+    if(within1HourSchedule.length === 0 && Math.abs(getCurrentTimeInMinutes() - lastSuggestionTimeInMinutes) <= 30){
+      return;
+    }
+
+    const getSuggesion = async () => {
+      try {
+        const accessToken = await checkAuth(navigate);
+        if (!accessToken) return;
+        const response = await fetch(
+          `http://localhost:8000/assistant/get_suggestion`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              hasSchedule: within1HourSchedule.length > 0,
+              schedule: within1HourSchedule,
+              clientTime: new Date().toISOString().split("T")[1],
+              clientDate: new Date().toISOString().split("T")[0],
+            }),
+          }
+        );
+        const { data } = await response.json();
+        if (response.ok) {
+          setSuggestion(data.suggestion);
+          localStorage.setItem("lastSuggestionTime", new Date().toISOString().split("T")[1]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+
+
+    getSuggesion();
+
+  }, []);
 
   const categoryBorderColors = {
     Work: "border-blue-400",

@@ -35,7 +35,6 @@ export function ConversationContainer() {
   // Assuming Greeting is roughly 20% of initial view, Chat input is roughly 15%.
   // When chat starts, Greeting becomes smaller.
   const greetingAreaHeightClass = isChatStarting ? "h-[30px]" : "h-[120px]"; // Fixed heights for more predictability
-  const chatInputAreaHeight = "h-[100px]"; // Increased height for chat input area
 
   return (
     <div className="w-full h-full relative flex flex-col bg-slate-50">
@@ -68,7 +67,7 @@ export function ConversationContainer() {
         </div>
       )}
 
-      <div className={`${chatInputAreaHeight} bg-slate-100 border-t border-slate-200`}>
+      <div className="h-[60px] bg-slate-100 border-t border-slate-200">
         <Chat />
       </div>
     </div>
