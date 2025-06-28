@@ -129,7 +129,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="flex-1 w-full flex flex-col overflow-y-auto">
+      <div className="flex-1 w-full flex flex-col overflow-y-auto gap-y-2">
         <span className="font-semibold text-sm mb-1">Today's Schedule</span>
         <div className="flex flex-col gap-y-2 overflow-y-auto">
           {todayEvents.length > 0 ? (
