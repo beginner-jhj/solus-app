@@ -88,7 +88,7 @@ export default function Home() {
             body: JSON.stringify({
               hasSchedule: within1HourSchedule.length > 0,
               schedule: within1HourSchedule,
-              clientTime: new Date().toISOString().split("T")[1],
+              clientTime: new Date().toTimeString().split(" ")[0],
               clientDate: new Date().toISOString().split("T")[0],
             }),
           }
