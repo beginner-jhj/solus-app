@@ -52,10 +52,9 @@ export function Chat() {
     if (!db || !currentConversationId) return;
 
     try {
-      const newChatId = `chat_${Date.now()}`;
       const messageToSave = {
         ...message,
-        id: newChatId,
+        id: message.id || `chat_${Date.now()}`, // Use existing ID or create a new one
         conversationId: currentConversationId,
         timestamp: new Date().toISOString(),
       };
@@ -85,7 +84,11 @@ export function Chat() {
     if (messageContent.trim() === "") {
       return;
     }
-    const userMessage = { type: "user", data: { message: messageContent } };
+    const userMessage = {
+      id: `chat_${Date.now()}`,
+      type: "user",
+      data: { message: messageContent },
+    };
     setChatHistory(userMessage);
     setMessage(""); // Clear input immediately after sending user message to history
 
@@ -127,7 +130,6 @@ export function Chat() {
         })
       );
 
-      // Extract only the essential parts from mainAgent's response
       const simplifiedData = {
         response: data.response.response || data.response,
         summary: data.response.summary || "Chat response",
@@ -136,7 +138,11 @@ export function Chat() {
         suggestedSchedules: suggestedSchedulesWithIds || [],
       };
 
-      const assistantMessage = { type: "assistant", data: simplifiedData };
+      const assistantMessage = {
+        id: `chat_${Date.now()}`,
+        type: "assistant",
+        data: simplifiedData,
+      };
       setChatHistory(assistantMessage);
 
       // Save assistant message to IndexedDB
@@ -145,40 +151,10 @@ export function Chat() {
       // Trigger a reload of conversations to update the list
       const { loadConversations } = assistantPageStore.getState();
       loadConversations();
-
-      // Process new_user_preference
-      if (data.new_user_preference) {
-        if (data.new_user_preference.likes) {
-          localStorage.setItem("likes", data.new_user_preference.likes);
-        }
-        if (data.new_user_preference.dislikes) {
-          localStorage.setItem("dislikes", data.new_user_preference.dislikes);
-        }
-        if (data.new_user_preference.hobbies) {
-          localStorage.setItem("hobbies", data.new_user_preference.hobbies);
-        }
-        if (data.new_user_preference.personality_traits) {
-          localStorage.setItem(
-            "personality_traits",
-            data.new_user_preference.personality_traits
-          );
-        }
-        if (data.new_user_preference.communication_style) {
-          localStorage.setItem(
-            "communication_style",
-            data.new_user_preference.communication_style
-          );
-        }
-        if (data.new_user_preference.topics_of_interest) {
-          localStorage.setItem(
-            "topics_of_interest",
-            data.new_user_preference.topics_of_interest
-          );
-        }
-      }
     } catch (error) {
       console.error("Failed to send message or process response:", error);
       const assistantErrorMessage = {
+        id: `chat_${Date.now()}`,
         type: "assistant",
         data: { error: true, message: error.message || "Network error" },
       };

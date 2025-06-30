@@ -69,7 +69,7 @@ export default function Home() {
       return Math.abs(targetTime - currentTime) <= 80;
     })
 
-    if(within1HourSchedule.length === 0 && Math.abs(getCurrentTimeInMinutes() - lastSuggestionTimeInMinutes) <= 30){
+    if(Math.abs(getCurrentTimeInMinutes() - lastSuggestionTimeInMinutes) <= 30){
       return;
     }
 
@@ -103,7 +103,6 @@ export default function Home() {
           );
           localStorage.setItem(
             "lastSuggestionTime",
-
             `${new Date().getHours()}:${new Date().getMinutes()}`
           );
         }
