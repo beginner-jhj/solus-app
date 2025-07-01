@@ -147,7 +147,10 @@ export function AssistantMessage({ message }) {
           // Normal response rendering path
           <div className="bg-slate-100 text-slate-800 py-2 px-4 rounded-xl shadow-md max-w-md lg:max-w-lg prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none break-words">
             {useHTML ? (
-              <div ref={assistantHtmlResponseContainerRef} dangerouslySetInnerHTML={{ __html: responseToRender }} />
+              <div
+                ref={assistantHtmlResponseContainerRef}
+                dangerouslySetInnerHTML={{ __html: responseToRender }}
+              />
             ) : (
               responseToRender
             )}
