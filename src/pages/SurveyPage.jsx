@@ -19,6 +19,9 @@ export default function SurveyPage() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState({ open: false, message: "" });
+  const [isSurveyDone, setIsSurveyDone] = useState(false);
+
+  const storedStructuredAnswer = sessionStorage.getItem("structuredAnswer");
 
   const surveySteps = [
     "greeting",
@@ -28,7 +31,6 @@ export default function SurveyPage() {
     "wakeUpTime",
     "focusTime",
     "routineActivity",
-    "habits",
     "personalGoal",
     "finalMessage",
   ];
@@ -49,14 +51,14 @@ export default function SurveyPage() {
       const accessToken = await checkAuth(navigate);
       if (!accessToken) return;
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/chat/survey",
+        "http://localhost:8000/assistant/survey",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ surveyHistory: history, nextStep: step }),
+          body: JSON.stringify({ surveyHistory: history, nextStep: step, structuredAnswerHistory: storedStructuredAnswer }),
         },
         setError,
         navigate
@@ -75,6 +77,12 @@ export default function SurveyPage() {
         history.push(assistantMsg);
         setSurveyHistory([...history]);
         sessionStorage.setItem("surveyHistory", JSON.stringify(history));
+        const {structuredAnswer} = assistantMessage;
+        const parsedStructuredAnswer = storedStructuredAnswer
+          ? JSON.parse(storedStructuredAnswer)
+          : [];
+        parsedStructuredAnswer.push(structuredAnswer);
+        sessionStorage.setItem("structuredAnswer", JSON.stringify(parsedStructuredAnswer));
       }
       if (nextStepId) {
         setNextStep(nextStepId);
@@ -86,10 +94,20 @@ export default function SurveyPage() {
         sessionStorage.setItem("nextStep", next);
       }
       if (surveyDone) {
+        history.push({
+          id: `assistant_${Date.now()}`,
+          type: "assistant",
+          data: {
+            response: "Thank you for your time! You can close this window.",
+            options: [],
+          },
+        });
+        setSurveyHistory([...history]);
         localStorage.setItem("didSurvey", true);
         sessionStorage.removeItem("surveyHistory");
         sessionStorage.removeItem("nextStep");
-        navigate("/");
+        sessionStorage.removeItem("structuredAnswer");
+        setIsSurveyDone(true);
       }
     } catch (err) {
       console.error(err);
@@ -112,8 +130,13 @@ export default function SurveyPage() {
     await fetchSurvey(updated, nextStep);
   };
 
+  const finishSurvey = () => {
+    navigate("/");
+    return;
+  };
+
   return (
-    <div className="w-full h-full flex flex-col bg-slate-50 p-4">
+    <div className="w-80 h-full flex flex-col bg-slate-50 p-4">
       <ErrorNotification
         open={error.open}
         message={error.message}
@@ -124,7 +147,7 @@ export default function SurveyPage() {
           msg.type === "user" ? (
             <SurveyUserMessage key={idx} message={msg} />
           ) : (
-            <SurveyAssistantMessage key={idx} message={msg} />
+            <SurveyAssistantMessage key={idx} message={msg} isSurveyDone={isSurveyDone} finishSurveyCallback={finishSurvey} useHtml={typeof msg.data.response === 'string' && /[<>]/g.test(msg.data.response)}/>
           )
         )}
         <div ref={messageEndRef} className="h-1" />
