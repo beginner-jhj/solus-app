@@ -22,10 +22,23 @@ export default function Layout() {
   const profileBox = useRef();
 
   useEffect(() => {
-    const didSurvey = localStorage.getItem("didSurvey");
-    if (!didSurvey) {
-      navigate("/survey");
-    }
+    const checkLoginAndSurvey = async () => {
+      try {
+        const accessToken = await checkAuth(navigate);
+        if (!accessToken) {
+          navigate("/signin"); 
+          return;
+        }
+        const didSurvey = localStorage.getItem("didSurvey");
+        if (!didSurvey) {
+          navigate("/survey");
+        }
+      } catch (err) {
+        console.error("Auth error:", err);
+        navigate("/signin");
+      }
+    };
+    checkLoginAndSurvey();
   }, [navigate]);
 
   useEffect(() => {
@@ -52,7 +65,7 @@ export default function Layout() {
           }
         }
       } catch (err) {
-        console.error(err);
+        console.error("Profile error:", err);
       }
     };
 
