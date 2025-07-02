@@ -1,7 +1,7 @@
 import convIcon from "../assets/talk-icon.svg";
 import { ConversationContainer } from "../components/assistant/ConversationContainer";
 import { assistantPageStore } from "../components/assistant/assistantPageStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ConfirmDialog } from "../components/common/ConfirmDialog";
 
@@ -25,6 +25,8 @@ export default function AssistantPage() {
     title: '',
     message: ''
   });
+
+  const conversationListRef = useRef(null);
   
   // State for tracking deletion in progress
   const [deletingConversationId, setDeletingConversationId] = useState(null);
@@ -33,6 +35,18 @@ export default function AssistantPage() {
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+
+  useEffect(() => {
+    const clickOutside = (e) => {
+      if (conversationListRef.current && !conversationListRef.current.contains(e.target)) {
+        toggleConversationList();
+      }
+    };
+    document.addEventListener('click', clickOutside);
+    return () => {
+      document.removeEventListener('click', clickOutside);
+    };
+  }, [toggleConversationList]);
   
   // Handle opening the delete confirmation dialog
   const handleDeleteClick = (e, conversationId, title) => {
@@ -79,12 +93,12 @@ export default function AssistantPage() {
           src={convIcon}
           className="w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity"
           alt="Chat History Icon"
-          onClick={toggleConversationList}
+          onClick={(e) => { e.stopPropagation(); toggleConversationList() }}
         />
         
         {/* Conversation list dropdown */}
-        {showConversationList && (
-          <div className="absolute top-8 left-0 w-64 max-h-96 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+        {(
+          <div ref={conversationListRef} onClick={(e) => e.stopPropagation()} className={`absolute top-8 left-0 w-64 max-h-96 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg z-10 ${showConversationList ? "" : "hidden"}`}>
             <div className="p-2 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-sm font-medium text-gray-700">Conversations</h3>
               <button 

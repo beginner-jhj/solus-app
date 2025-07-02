@@ -18,7 +18,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { profileImageURL, setProfileImageURL } = store();
   const [userName, setUserName] = useState(null);
-  const [openProfilBox, setOpenProfileBox] = useState(false);
+  const [openProfileBox, setOpenProfileBox] = useState(false);
   const profileBox = useRef();
 
   useEffect(() => {
@@ -58,20 +58,26 @@ export default function Layout() {
     getProfile();
   }, [navigate]);
 
+  useEffect(()=>{
+    const clickOutside = (e)=>{
+      if(profileBox.current && !profileBox.current.contains(e.target)){
+        setOpenProfileBox(false);
+      }
+    }
+    document.addEventListener("click",clickOutside);
+    return ()=>{
+      document.removeEventListener("click",clickOutside);
+    }
+  },[openProfileBox])
+
   const logout = () => {
     chrome.runtime.sendMessage({ type: "REMOVE_ACCESS_TOKEN" });
     chrome.runtime.sendMessage({ type: "REMOVE_REFRESH_TOKEN" });
     navigate("/signin");
   };
 
-  const profileBoxToggle = () => {
-    profileBox.current.style.height = openProfilBox ? "140px" : "0px";
-    profileBox.current.style.border = openProfilBox
-      ? "2px solid oklch(87.2% 0.01 258.338)"
-      : "none";
-  };
+  // Remove profileBoxToggle and use conditional styles instead
 
-  useEffect(profileBoxToggle, [openProfilBox]);
 
   return (
     <div className="w-80 h-[400px] bg-white grid items-center justify-items-center grid-rows-[30px_30px_320px] gap-y-[15px]">
@@ -88,12 +94,13 @@ export default function Layout() {
         <img
           className="w-8 h-8 border rounded-[50%] border-gray-300 hover:shadow-lg hover:border-2 cursor-pointer"
           src={profileImageURL}
-          onClick={() => setOpenProfileBox((prev) => !prev)}
+          onClick={(e) => { e.stopPropagation(); setOpenProfileBox((prev) => !prev); }}
         ></img>
       </header>
       <div
         ref={profileBox}
-        className="w-30 h-0 z-10 bg-white shadow-lg rounded-md absolute right-1 top-13 transition-all duration-200 overflow-hidden flex flex-col items-center justify-start p-1 gap-y-3"
+        onClick={(e) => e.stopPropagation()}
+        className={`w-30 z-10 bg-white shadow-lg rounded-md absolute right-1 top-13 transition-all duration-200 overflow-hidden flex flex-col items-center justify-start p-1 gap-y-3 ${openProfileBox ? 'h-[140px] border-2 border-[oklch(87.2%_0.01_258.338)]' : 'h-0 border-none'}`}
       >
         <div className="w-full flex items-center justify-between px-1">
           <div className="w-1/3 flex">
