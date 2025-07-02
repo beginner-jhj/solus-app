@@ -102,7 +102,7 @@ export default function Layout() {
       <div
         ref={profileBox}
         onClick={(e) => e.stopPropagation()}
-        className={`w-30 z-10 bg-white shadow-lg rounded-md absolute right-1 top-13 transition-all duration-200 overflow-hidden flex flex-col items-center justify-start p-1 gap-y-3 ${openProfileBox ? 'h-[140px] border-2 border-[oklch(87.2%_0.01_258.338)]' : 'h-0 border-none'}`}
+        className={`w-30 z-10 bg-white shadow-lg rounded-md absolute right-1 top-13 transition-all duration-200 overflow-hidden flex flex-col items-center justify-around p-1 ${openProfileBox ? 'h-[110px] border-2 border-[oklch(87.2%_0.01_258.338)]' : 'h-0 border-none'}`}
       >
         <div className="w-full flex items-center justify-between px-1">
           <div className="w-1/3 flex">
@@ -117,12 +117,6 @@ export default function Layout() {
           <img className="w-4 h-5" src={user}></img>
           <Link to="/my-profile" className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-blue-600">
             My Profile
-          </Link>
-        </div>
-        <div className="w-full flex items-center justify-start">
-          <img className="w-6 h-6" src={setting}></img>
-          <Link to="/setting" className="font-semibold text-[13px] ml-1 cursor-pointer hover:text-blue-600">
-            Setting
           </Link>
         </div>
         <div className="w-full flex items-center justify-start">
