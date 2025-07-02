@@ -113,15 +113,15 @@ export default function Layout() {
         </div>
         <div className="w-full flex items-center justify-start px-1">
           <img className="w-4 h-5" src={user}></img>
-          <span className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-blue-600">
+          <Link to="/my-profile" className="font-semibold text-[13px] ml-2 cursor-pointer hover:text-blue-600">
             My Profile
-          </span>
+          </Link>
         </div>
         <div className="w-full flex items-center justify-start">
           <img className="w-6 h-6" src={setting}></img>
-          <span className="font-semibold text-[13px] ml-1 cursor-pointer hover:text-blue-600">
+          <Link to="/setting" className="font-semibold text-[13px] ml-1 cursor-pointer hover:text-blue-600">
             Setting
-          </span>
+          </Link>
         </div>
         <div className="w-full flex items-center justify-start">
           <img className="w-5 h-5" src={logoutIcon}></img>

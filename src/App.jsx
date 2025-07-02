@@ -5,6 +5,8 @@ import Schedule from "./pages/Schedule.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
 import SigninForm from "./pages/Signin.jsx";
 import SurveyPage from "./pages/SurveyPage.jsx";
+import MyProfile from "./pages/MyProflie.jsx";
+import SettingPage from "./pages/SettingPage.jsx";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         </Route>
         <Route path="/signin" element={<SigninForm />} />
         <Route path="/survey" element={<SurveyPage />} />
+        <Route path="/my-profile" element={<MyProfile />} />
+        <Route path="/setting" element={<SettingPage />} />
       </Routes>
     </Router>
   );
