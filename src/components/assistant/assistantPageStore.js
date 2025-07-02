@@ -21,11 +21,8 @@ export const assistantPageStore = create((set,get) => ({
     
     // Set the entire chat history (for switching conversations)
     setFullChatHistory: (history) => set({ chatHistory: history }),
-    
-    // Toggle conversation list visibility
-    toggleConversationList: () => set(state => ({ 
-        showConversationList: !state.showConversationList 
-    })),
+
+    setShowConversationList: (arg) => setState(set,get,"showConversationList",arg),
     
     // Set available conversations
     setConversations: (conversations) => set({ conversations }),

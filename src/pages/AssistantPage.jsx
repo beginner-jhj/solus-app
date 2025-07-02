@@ -7,7 +7,7 @@ import { ConfirmDialog } from "../components/common/ConfirmDialog";
 
 export default function AssistantPage() {
   const { 
-    toggleConversationList, 
+    setShowConversationList,
     showConversationList, 
     conversations, 
     loadConversations, 
@@ -39,14 +39,14 @@ export default function AssistantPage() {
   useEffect(() => {
     const clickOutside = (e) => {
       if (conversationListRef.current && !conversationListRef.current.contains(e.target)) {
-        toggleConversationList();
+        setShowConversationList(false);
       }
     };
     document.addEventListener('click', clickOutside);
     return () => {
       document.removeEventListener('click', clickOutside);
     };
-  }, [toggleConversationList]);
+  }, [setShowConversationList, showConversationList]);
   
   // Handle opening the delete confirmation dialog
   const handleDeleteClick = (e, conversationId, title) => {
@@ -93,7 +93,7 @@ export default function AssistantPage() {
           src={convIcon}
           className="w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity"
           alt="Chat History Icon"
-          onClick={(e) => { e.stopPropagation(); toggleConversationList() }}
+          onClick={(e) => { e.stopPropagation(); setShowConversationList((prev) => !prev) }}
         />
         
         {/* Conversation list dropdown */}
