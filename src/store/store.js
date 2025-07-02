@@ -36,4 +36,6 @@ export const eventCategoryStyles = {
 export const store = create((set,get)=>({
     profileImageURL:"",
     setProfileImageURL:(arg)=>setState(set,get,"profileImageURL",arg),
+    nickname:"",
+    setNickname:(arg)=>setState(set,get,"nickname",arg),
 }))

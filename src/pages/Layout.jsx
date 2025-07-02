@@ -16,6 +16,7 @@ import { store } from "../store/store.js";
 
 export default function Layout() {
   const navigate = useNavigate();
+  const { setNickname } = store();
   const { profileImageURL, setProfileImageURL } = store();
   const [userName, setUserName] = useState(null);
   const [openProfileBox, setOpenProfileBox] = useState(false);
@@ -48,6 +49,7 @@ export default function Layout() {
           if (response.status === 200) {
             setProfileImageURL(jsonRes.profileImage);
             setUserName(jsonRes.name);
+            setNickname(jsonRes.nickname);
           }
         }
       } catch (err) {

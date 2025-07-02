@@ -1,5 +1,6 @@
 import logo from "../../assets/logo.svg"
 import { assistantPageStore } from "./assistantPageStore"
+import { store } from "../../store/store"
 import { useEffect, useRef } from "react"
 
 export function Greeting() {
@@ -7,7 +8,7 @@ export function Greeting() {
     const logoRef = useRef();
     const greetingMessageRef = useRef();
     const greetingContainerRef = useRef();
-    const userNickName = localStorage.getItem("nickname");
+    const {nickname} = store();
 
     useEffect(()=>{
         if(greetingContainerRef.current && logoRef.current && isChatStarting){
@@ -26,9 +27,9 @@ export function Greeting() {
         <div ref={greetingContainerRef} className="absolute top-10 left-1/2 transform -translate-x-1/2 w-[90%] flex flex-col items-center justify-center transition-all duration-500 ease-in-out">
             <img ref={logoRef} src={logo} className="w-14 h-14 transition-all duration-500 ease-in-out" />
             <p ref={greetingMessageRef} className="text-xl font-bold transition-all duration-500 ease-in-out">
-                {userNickName ? (
+                {nickname ? (
                     <>
-                        Hello {Array.from(userNickName).map((char, index) => (
+                        Hello {Array.from(nickname).map((char, index) => (
                             <span
                                 key={index}
                                 className='bounce-char font-bold'
