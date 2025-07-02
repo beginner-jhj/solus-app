@@ -19,6 +19,7 @@ export default function Layout() {
   const { profileImageURL, setProfileImageURL } = store();
   const [userName, setUserName] = useState(null);
   const [openProfileBox, setOpenProfileBox] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const profileBox = useRef();
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function Layout() {
         if (!didSurvey) {
           navigate("/survey");
         }
+        setIsAuthorized(true);
       } catch (err) {
         console.error("Auth error:", err);
         navigate("/signin");
@@ -68,9 +70,10 @@ export default function Layout() {
         console.error("Profile error:", err);
       }
     };
-
-    getProfile();
-  }, [navigate]);
+    if(isAuthorized){
+      getProfile();
+    }
+  }, [navigate, isAuthorized]);
 
   useEffect(()=>{
     const clickOutside = (e)=>{
@@ -89,9 +92,6 @@ export default function Layout() {
     chrome.runtime.sendMessage({ type: "REMOVE_REFRESH_TOKEN" });
     navigate("/signin");
   };
-
-  // Remove profileBoxToggle and use conditional styles instead
-
 
   return (
     <div className="w-80 h-[400px] bg-white grid items-center justify-items-center grid-rows-[30px_30px_320px] gap-y-[15px]">

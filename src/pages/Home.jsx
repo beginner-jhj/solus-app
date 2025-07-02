@@ -10,7 +10,7 @@ export default function Home() {
   const [lastSuggestion, setLastSuggestion] = useState(
     localStorage.getItem("lastSuggestion") || ""
   );
-  const todayEventsStore = JSON.parse(localStorage.getItem("todayEvents"));
+  const todayEventsStore = JSON.parse(localStorage.getItem("todayEvents")) || [];
   const lastSuggestionTime = localStorage.getItem("lastSuggestionTime");
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function Home() {
           <span className="font-semibold text-blue-700 text-sm mb-1">
             Suggestion
           </span>
-          <p className="text-sm text-gray-700 whitespace-pre-line flex-grow">
+          <p className="text-sm text-gray-700 whitespace-pre-line flex-grow overflow-y-auto">
             {suggestion || lastSuggestion || "No suggestions right now."}
           </p>
         </div>

@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "REMOVE_ACCESS_TOKEN") {
     chrome.cookies.remove(
       {
-        url: "http://localhost:8000/auth/check_token",
+        url: "http://localhost:8000/auth/login",
         name: "accessToken",
       },
       (cookie) => console.log("accessToken deleted", cookie)
@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "REMOVE_REFRESH_TOKEN") {
     chrome.cookies.remove(
       {
-        url: "http://localhost:8000/auth/check_token",
+        url: "http://localhost:8000/auth/login",
         name: "refreshToken",
       },
       (cookie) => console.log("refreshToken deleted", cookie)
@@ -56,25 +56,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if(message.type === "OPEN_URL") {
     console.log("OPEN_URL", message.url);
     chrome.tabs.create({ url: message.url });
-    sendResponse({ success: true });
-    return true;
-  }
-
-  if(message.type === "DELETE_USER") {
-    chrome.cookies.remove(
-      {
-        url: "http://localhost:8000/auth/check_token",
-        name: "accessToken",
-      },
-      (cookie) => console.log("accessToken deleted", cookie)
-    );
-    chrome.cookies.remove(
-      {
-        url: "http://localhost:8000/auth/check_token",
-        name: "refreshToken",
-      },
-      (cookie) => console.log("refreshToken deleted", cookie)
-    );
     sendResponse({ success: true });
     return true;
   }
