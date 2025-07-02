@@ -95,15 +95,6 @@ export default function SurveyPage() {
         sessionStorage.setItem("nextStep", next);
       }
       if (surveyDone) {
-        history.push({
-          id: `assistant_${Date.now()}`,
-          type: "assistant",
-          data: {
-            response: "Thank you for your time! You can close this window.",
-            options: [],
-          },
-        });
-        setSurveyHistory([...history]);
         localStorage.setItem("didSurvey", true);
         sessionStorage.removeItem("surveyHistory");
         sessionStorage.removeItem("nextStep");
