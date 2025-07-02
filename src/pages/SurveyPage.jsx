@@ -24,7 +24,6 @@ export default function SurveyPage() {
   const storedStructuredAnswer = sessionStorage.getItem("structuredAnswer");
 
   const surveySteps = [
-    "greeting",
     "language",
     "nickname",
     "likes",

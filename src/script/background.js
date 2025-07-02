@@ -60,4 +60,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if(message.type === "DELETE_USER") {
+    chrome.cookies.remove(
+      {
+        url: "http://localhost:8000/auth/check_token",
+        name: "accessToken",
+      },
+      (cookie) => console.log("accessToken deleted", cookie)
+    );
+    chrome.cookies.remove(
+      {
+        url: "http://localhost:8000/auth/check_token",
+        name: "refreshToken",
+      },
+      (cookie) => console.log("refreshToken deleted", cookie)
+    );
+    sendResponse({ success: true });
+    return true;
+  }
 });

@@ -76,7 +76,7 @@ export default function Home() {
 
     const lastSuggestionTimeInMinutes = timeToMinutes(lastSuggestionTime);
 
-    const within1HourSchedule = todayEventsStore[1].filter((event) => {
+    const within1HourSchedule = todayEventsStore[1]?.filter((event) => {
       const targetTime = timeToMinutes(event.startTime);
       const currentTime = getCurrentTimeInMinutes();
       return Math.abs(targetTime - currentTime) <= 80;
