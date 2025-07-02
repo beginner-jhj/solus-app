@@ -14,7 +14,6 @@ export default defineConfig({
       input: {
         main: "index.html",
         background: "src/script/background.js",
-        content: "src/script/content.js",
       },
       output: {
         entryFileNames: "src/script/[name].js", // output 경로를 src/script로 설정

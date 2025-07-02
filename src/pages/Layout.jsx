@@ -9,7 +9,6 @@ import webBalck from "../assets/web-black.svg";
 import webGray from "../assets/web-gray.svg";
 import nameTag from "../assets/nametag.svg";
 import user from "../assets/user.svg";
-import setting from "../assets/setting.svg";
 import logoutIcon from "../assets/logout.svg";
 import { checkAuth } from "../lib/lib.js";
 import { store } from "../store/store.js";
