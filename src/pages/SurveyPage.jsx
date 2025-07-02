@@ -25,6 +25,7 @@ export default function SurveyPage() {
 
   const surveySteps = [
     "greeting",
+    "language",
     "nickname",
     "likes",
     "location",
