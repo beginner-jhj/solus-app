@@ -53,6 +53,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if (message.type === "ASK_WEB_Q") {
+    chrome.cookies.get({ url: "http://localhost:8000/auth/login", name: "accessToken" }, async (cookie) => {
+      try {
+        const token = cookie ? cookie.value : "";
+        const response = await fetch("http://localhost:8000/assistant/ask_web_q", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ selectedText: message.selectedText, userQuestion: message.userQuestion }),
+        });
+        const data = await response.json();
+        sendResponse({ data: data.data });
+      } catch (err) {
+        console.error("ASK_WEB_Q error", err);
+        sendResponse({ error: true });
+      }
+    });
+    return true;
+  }
+
   if(message.type === "OPEN_URL") {
     console.log("OPEN_URL", message.url);
     chrome.tabs.create({ url: message.url });
@@ -60,3 +82,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
