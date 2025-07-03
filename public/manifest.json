@@ -12,13 +12,19 @@
       "128": "icon-128.png"
     }
     },
-    "permissions": ["identity","cookies","offscreen","geolocation","scripting","tabs"],
-    "host_permissions":["http://localhost:8000/auth/login"],
+    "permissions": ["identity","cookies","offscreen","geolocation","scripting","tabs","activeTab"],
+    "host_permissions":["<all_urls>"],
     "oauth2": {
       "client_id": "267309487358-27j43bjgpnb03a4lqevcoqci4g2nu8jm.apps.googleusercontent.com",
       "scopes": ["profile", "email"]
     },
     "background":{
       "service_worker":"src/script/background.js"
-    }
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["src/script/content.js"]
+      }
+    ]
 }
