@@ -37,9 +37,9 @@ function createChatUI(rect) {
   // Position initially just below/right of the selection
   chatContainer.style.top = `${rect.bottom}px`;
   chatContainer.style.left = `${rect.right}px`;
-  chatContainer.style.width = "300px";
-  chatContainer.style.height = "350px";
-  chatContainer.style.maxHeight = "400px";
+  chatContainer.style.width = "350px";
+  chatContainer.style.height = "420px";
+  chatContainer.style.maxHeight = "450px";
   chatContainer.style.background = "#fff";
   chatContainer.style.border = "1px solid #ccc";
   chatContainer.style.borderRadius = "6px";
@@ -53,7 +53,7 @@ function createChatUI(rect) {
 
   const selectedElem = document.createElement("div");
   selectedElem.style.width = "inherit";
-  selectedElem.style.height = "20px";
+  selectedElem.style.height = "24px";
   selectedElem.textContent = selectedText;
   selectedElem.style.background = "#f0f4ff";
   selectedElem.style.padding = "6px";
@@ -68,7 +68,7 @@ function createChatUI(rect) {
 
   const messagesElem = document.createElement("div");
   messagesElem.id = "solus-chat-messages";
-  messagesElem.style.height = "300px";
+  messagesElem.style.height = "320px";
   messagesElem.style.width = "inherit";
   messagesElem.style.overflow = "auto";
   messagesElem.style.padding = "8px";
@@ -80,7 +80,7 @@ function createChatUI(rect) {
   // footer container to hold selected text & input
   const footerElem = document.createElement("div");
   footerElem.style.width = "inherit";
-  footerElem.style.height = "50px";
+  footerElem.style.height = "70px";
   footerElem.style.borderTop = "1px solid #e5e5e5";
   footerElem.style.padding = "8px";
   footerElem.style.display = "flex";
@@ -92,7 +92,7 @@ function createChatUI(rect) {
   inputElem.id = "solus-chat-input";
   inputElem.placeholder = "Type your question...";
   inputElem.style.resize = "none";
-  inputElem.style.height = "30px";
+  inputElem.style.height = "40px";
   inputElem.style.padding = "6px";
   inputElem.style.border = "1px solid #ccc";
   inputElem.style.borderRadius = "4px";
@@ -188,7 +188,7 @@ function sendQuestion(question, messagesElem) {
       loading.remove();
       if (response && response.data) {
         const answer = document.createElement("div");
-        answer.style.height = "50px";
+        answer.style.height = "60px";
         answer.style.width = "inherit";
         answer.style.overflow = "auto";
         answer.style.margin = "4px 0";
