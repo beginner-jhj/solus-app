@@ -53,7 +53,7 @@ function createChatUI(rect) {
 
   const selectedElem = document.createElement("div");
   selectedElem.style.width = "inherit";
-  selectedElem.style.height = "24px";
+  selectedElem.style.height = "30px";
   selectedElem.textContent = selectedText;
   selectedElem.style.background = "#f0f4ff";
   selectedElem.style.padding = "6px";
@@ -80,7 +80,7 @@ function createChatUI(rect) {
   // footer container to hold selected text & input
   const footerElem = document.createElement("div");
   footerElem.style.width = "inherit";
-  footerElem.style.height = "70px";
+  footerElem.style.height = "100px";
   footerElem.style.borderTop = "1px solid #e5e5e5";
   footerElem.style.padding = "8px";
   footerElem.style.display = "flex";
@@ -92,7 +92,7 @@ function createChatUI(rect) {
   inputElem.id = "solus-chat-input";
   inputElem.placeholder = "Type your question...";
   inputElem.style.resize = "none";
-  inputElem.style.height = "40px";
+  inputElem.style.height = "60px";
   inputElem.style.padding = "6px";
   inputElem.style.border = "1px solid #ccc";
   inputElem.style.borderRadius = "4px";
