@@ -65,11 +65,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           },
           body: JSON.stringify({ selectedText: message.selectedText, userQuestion: message.userQuestion }),
         });
+        if (!response.ok) {
+          const text = await response.text();             // read body once
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
         const data = await response.json();
-        sendResponse({ data: data.data });
+        sendResponse({ data: data.data.searchResult });
       } catch (err) {
-        console.error("ASK_WEB_Q error", err);
-        sendResponse({ error: true });
+        console.error("ASK_WEB_Q error", err); // endpoint returns 404 if path incorrect
+        sendResponse({ error: true, message: err.message || String(err), stack: err.stack });
       }
     });
     return true;
