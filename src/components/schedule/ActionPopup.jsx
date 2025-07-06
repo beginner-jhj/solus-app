@@ -93,7 +93,7 @@ ${JSON.stringify(processedDays, null, 2)}
   `.trim();
       }
 
-      const response = await fetch("http://localhost:8000/assistant/chat", {
+      const response = await fetch("https://solus-server-production.up.railway.app/assistant/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ ${JSON.stringify(processedDays, null, 2)}
 
       message += `\n\nSelected Days: ${JSON.stringify(processedDays)}`;
 
-      const response = await fetch("http://localhost:8000/assistant/chat", {
+      const response = await fetch("https://solus-server-production.up.railway.app/assistant/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

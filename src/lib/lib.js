@@ -64,7 +64,7 @@ export const fetchWithErrorHandling = async (url, options = {}, setError, naviga
 
 export const checkAuth = async (navigate) => {
     try {
-      const response = await fetch("http://localhost:8000/auth/check_token", {
+      const response = await fetch("https://solus-server-production.up.railway.app/auth/check_token", {
         method: "POST",
         credentials: "include",
       });

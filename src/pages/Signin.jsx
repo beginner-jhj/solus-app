@@ -31,7 +31,7 @@ export default function SigninForm() {
           const accessToken = new URL(redirectUrl).hash.match(
             /access_token=([^&]+)/
           )?.[1];
-          fetch("http://localhost:8000/auth/login", {
+          fetch("https://solus-server-production.up.railway.app/auth/login", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -42,6 +42,9 @@ export default function SigninForm() {
             .then((res) => res.json())
             .then(async (jsonRes) => {
               const { accessToken, refreshToken } = jsonRes;
+
+              console.log("accessToken:", accessToken);
+              console.log("refreshToken:", refreshToken);
               
               // Create promises with timeouts to prevent hanging indefinitely
               const createPromiseWithTimeout = (messageType, token) => {

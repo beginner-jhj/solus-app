@@ -24,7 +24,7 @@ export function ChatResponse({ chatInfo}) {
   const handleAccept = async (recommendation) => {
     try {
       const accessToken = await checkAuth(navigate);
-      const response = await fetch("http://localhost:8000/schedule/add_event", {
+      const response = await fetch("https://solus-server-production.up.railway.app/schedule/add_event", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

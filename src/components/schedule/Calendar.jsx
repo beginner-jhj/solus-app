@@ -23,7 +23,7 @@ export function Calendar({ days, month, firstDayOfWeek, prevMonthDays }) {
         try {
           const accessToken = await checkAuth(navigate);
           const response = await fetch(
-            `http://localhost:8000/schedule/get_events?year=${new Date().getFullYear()}&month=${
+            `https://solus-server-production.up.railway.app/schedule/get_events?year=${new Date().getFullYear()}&month=${
               monthNames[month]
             }&day=all`,
             {

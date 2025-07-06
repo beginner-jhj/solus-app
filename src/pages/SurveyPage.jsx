@@ -51,7 +51,7 @@ export default function SurveyPage() {
       const accessToken = await checkAuth(navigate);
       if (!accessToken) return;
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/assistant/survey",
+        "https://solus-server-production.up.railway.app/assistant/survey",
         {
           method: "POST",
           headers: {

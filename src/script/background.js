@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "SET_ACCESS_TOKEN") {
     chrome.cookies.set({
-      url: "http://localhost:8000/auth/login",
+      url: "https://solus-server-production.up.railway.app/auth/login",
       name: "accessToken",
       value: message.token,
       secure: true,
@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === "SET_REFRESH_TOKEN") {
     chrome.cookies.set({
-      url: "http://localhost:8000/auth/login",
+      url: "https://solus-server-production.up.railway.app/auth/login",
       name: "refreshToken",
       value: message.token,
       secure: true,
@@ -32,10 +32,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "REMOVE_ACCESS_TOKEN") {
     chrome.cookies.remove(
       {
-        url: "http://localhost:8000/auth/login",
+        url: "https://solus-server-production.up.railway.app/auth/login",
         name: "accessToken",
       },
-      (cookie) => console.log("accessToken deleted", cookie)
+      (cookie) => console.log("accessToken deleted")
     );
     sendResponse({ success: true });
     return true;
@@ -44,17 +44,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "REMOVE_REFRESH_TOKEN") {
     chrome.cookies.remove(
       {
-        url: "http://localhost:8000/auth/login",
+        url: "https://solus-server-production.up.railway.app/auth/login",
         name: "refreshToken",
       },
-      (cookie) => console.log("refreshToken deleted", cookie)
+      (cookie) => console.log("refreshToken deleted")
     );
     sendResponse({ success: true });
     return true;
   }
 
   if(message.type === "OPEN_URL") {
-    console.log("OPEN_URL", message.url);
     chrome.tabs.create({ url: message.url });
     sendResponse({ success: true });
     return true;

@@ -22,7 +22,7 @@ export default function Home() {
         if (!accessToken) return;
 
         const response = await fetch(
-          `http://localhost:8000/schedule/get_events?year=${today.getFullYear()}&month=${
+          `https://solus-server-production.up.railway.app/schedule/get_events?year=${today.getFullYear()}&month=${
             today.getMonth() + 1
           }&day=${today.getDate()}`,
           {
@@ -93,7 +93,7 @@ export default function Home() {
         const accessToken = await checkAuth(navigate);
         if (!accessToken) return;
         const response = await fetch(
-          `http://localhost:8000/assistant/get_suggestion`,
+          `https://solus-server-production.up.railway.app/assistant/get_suggestion`,
           {
             method: "POST",
             headers: {

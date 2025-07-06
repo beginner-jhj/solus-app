@@ -70,7 +70,7 @@ export function Event({
       try {
         const accessToken = await checkAuth(navigate);
         const response = await fetch(
-          `http://localhost:8000/schedule/delete_event?id=${e.target.id}`,
+          `https://solus-server-production.up.railway.app/schedule/delete_event?id=${e.target.id}`,
           {
             method: "DELETE",
             headers: {
@@ -89,7 +89,7 @@ export function Event({
       try {
         const accessToken = await checkAuth(navigate);
         const response = await fetch(
-          `http://localhost:8000/schedule/complete_event?id=${e.target.id}`,
+          `https://solus-server-production.up.railway.app/schedule/complete_event?id=${e.target.id}`,
           {
             method: "PUT",
             headers: {
@@ -113,7 +113,7 @@ export function Event({
       try {
         const accessToken = await checkAuth(navigate);
         const response = await fetch(
-          `http://localhost:8000/schedule/edit_event?id=${e.target.id}`,
+          `https://solus-server-production.up.railway.app/schedule/edit_event?id=${e.target.id}`,
           {
             method: "PUT",
             headers: {

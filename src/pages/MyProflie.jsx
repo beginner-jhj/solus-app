@@ -103,7 +103,7 @@ export default function MyProfile() {
     if (!accessToken) return;
     try {
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/user/delete_account",
+        "https://solus-server-production.up.railway.app/user/delete_account",
         {
           method: "DELETE",
           headers: {
@@ -138,7 +138,7 @@ export default function MyProfile() {
     if (!accessToken) return;
     try {
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/user/update_user_profile",
+        "https://solus-server-production.up.railway.app/user/update_user_profile",
         {
           method: "PUT",
           headers: {

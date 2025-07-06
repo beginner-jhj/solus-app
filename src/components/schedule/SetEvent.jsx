@@ -33,7 +33,7 @@ export function SetEvent({ setShowSetEvent, selectedDay, setTrigger }) {
       const accessToken = await checkAuth(navigate);
 
       await fetchWithErrorHandling(
-        "http://localhost:8000/schedule/add_event",
+        "https://solus-server-production.up.railway.app/schedule/add_event",
         {
           method: "POST",
           headers: {

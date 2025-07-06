@@ -41,16 +41,16 @@ export default function Layout() {
       }
     };
     checkLoginAndSurvey();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     const getProfile = async () => {
       try {
         const accessToken = await checkAuth(navigate);
 
-        if (accessToken) {
+        if (accessToken) { 
           const response = await fetch(
-            "http://localhost:8000/user/get_profile",
+            "https://solus-server-production.up.railway.app/user/get_profile",
             {
               method: "GET",
               headers: {
@@ -73,7 +73,7 @@ export default function Layout() {
     if(isAuthorized){
       getProfile();
     }
-  }, [navigate, isAuthorized]);
+  }, [isAuthorized]);
 
   useEffect(()=>{
     const clickOutside = (e)=>{

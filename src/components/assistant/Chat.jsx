@@ -104,7 +104,7 @@ export function Chat() {
       const chatHistory = await getConversationHistory();
 
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/assistant/chat",
+        "https://solus-server-production.up.railway.app/assistant/chat",
         {
           method: "POST",
           headers: {
