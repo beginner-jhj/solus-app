@@ -64,9 +64,21 @@ export const fetchWithErrorHandling = async (url, options = {}, setError, naviga
 
 export const checkAuth = async (navigate) => {
     try {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        navigate("/signin");
+        return null;
+      }
+
       const response = await fetch("https://solus-server-production.up.railway.app/auth/check_token", {
         method: "POST",
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ refreshToken }),
       });
       const jsonRes = await response.json();
 
@@ -74,19 +86,16 @@ export const checkAuth = async (navigate) => {
         throw new Error("Session expired.");
       }
 
-      if (response.status === 200 && jsonRes.expiredToken) {
+      if (jsonRes.expiredToken) {
         const newAccessToken = jsonRes.accessToken;
-        chrome.runtime.sendMessage({
-          type: "SET_ACCESS_TOKEN",
-          token: newAccessToken,
-        });
+        localStorage.setItem("accessToken", newAccessToken);
         return newAccessToken;
       }
       return jsonRes.accessToken;
     } catch (err) {
       console.error(err);
       navigate("/signin");
-      return
+      return null;
     }
   };
 

@@ -114,8 +114,8 @@ export default function MyProfile() {
         navigate
       );
       if(data.success){
-        chrome.runtime.sendMessage({type:"REMOVE_ACCESS_TOKEN"});
-        chrome.runtime.sendMessage({type:"REMOVE_REFRESH_TOKEN"});
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         localStorage.clear();
         navigate("/signin");
       }

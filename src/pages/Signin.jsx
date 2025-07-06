@@ -43,65 +43,27 @@ export default function SigninForm() {
             .then(async (jsonRes) => {
               const { accessToken, refreshToken } = jsonRes;
 
-              console.log("accessToken:", accessToken);
-              console.log("refreshToken:", refreshToken);
-              
-              // Create promises with timeouts to prevent hanging indefinitely
-              const createPromiseWithTimeout = (messageType, token) => {
-                return new Promise((resolve) => {
-                  // Set a timeout to resolve the promise after 2 seconds if no response
-                  const timeoutId = setTimeout(() => {
-                    console.warn(`${messageType} timeout - continuing anyway`);
-                    resolve({ success: false, timedOut: true });
-                  }, 2000);
-                  
-                  // Send the message to the background script
-                  chrome.runtime.sendMessage(
-                    {
-                      type: messageType,
-                      token: token,
-                    },
-                    (response) => {
-                      clearTimeout(timeoutId); // Clear the timeout if we got a response
-                      resolve(response || { success: true });
-                    }
-                  );
-                });
-              };
-              
-              // Set both tokens and continue regardless of response
-              Promise.all([
-                createPromiseWithTimeout("SET_ACCESS_TOKEN", accessToken),
-                createPromiseWithTimeout("SET_REFRESH_TOKEN", refreshToken)
-              ])
-              .then((responses) => {
-                
-                // Small delay to ensure cookies are properly set
-                setTimeout(() => {
-                  setLoginSuccess(true);
-                  setLoading(false);
+              // Store tokens in localStorage
+              localStorage.setItem("accessToken", accessToken);
+              localStorage.setItem("refreshToken", refreshToken);
 
-                  if (!localStorage.getItem("didSurvey")) {
-                    navigate("/survey");
-                  } else {
-                    navigate("/");
-                  }
-                }, 500);
-              })
-              .catch(error => {
-                console.error("Error setting tokens:", error);
-                // Continue anyway after error, as tokens might still be set
+              // Small delay to ensure everything is saved
+              setTimeout(() => {
                 setLoginSuccess(true);
                 setLoading(false);
-                
-                setOpenNotification(true);
-                navigate("/signin");
-              });
+
+                if (!localStorage.getItem("didSurvey")) {
+                  navigate("/survey");
+                } else {
+                  navigate("/");
+                }
+              }, 500);
             })
-              .catch((err) => {
-                console.error(err);
-                setLoading(false);
-              });
+            .catch((err) => {
+              console.error(err);
+              setLoading(false);
+              setOpenNotification(true);
+            });
         }
       }
     );
