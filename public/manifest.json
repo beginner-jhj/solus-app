@@ -12,8 +12,7 @@
       "128": "icon-128.png"
     }
     },
-    "permissions": ["identity","offscreen","geolocation","activeTab"],
-    "host_permissions":["<all_urls>"],
+    "permissions": ["identity","geolocation","activeTab"],
     "oauth2": {
       "client_id": "267309487358-27j43bjgpnb03a4lqevcoqci4g2nu8jm.apps.googleusercontent.com",
       "scopes": ["profile", "email"]
