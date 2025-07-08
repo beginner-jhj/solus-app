@@ -24,7 +24,7 @@ export default function MyProfile() {
     if (!accessToken) return;
     try {
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/user/get_profile",
+        "https://solus-server-production.up.railway.app/user/get_profile",
         {
           method: "GET",
           headers: {
@@ -50,7 +50,7 @@ export default function MyProfile() {
     if (!accessToken) return;
     try {
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/user/get_survey_result",
+        "https://solus-server-production.up.railway.app/user/get_survey_result",
         {
           method: "GET",
           headers: {
@@ -71,7 +71,7 @@ export default function MyProfile() {
     if (!accessToken) return;
     try {
       const data = await fetchWithErrorHandling(
-        "http://localhost:8000/schedule/get_events?getAll=true",
+        "https://solus-server-production.up.railway.app/schedule/get_events?getAll=true",
         {
           method: "GET",
           headers: {
